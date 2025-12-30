@@ -121,7 +121,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
         break;
 
       case " ":
-        dir.y = value * 5;
+        dir.y = value * 3;
         break;
 
       default:

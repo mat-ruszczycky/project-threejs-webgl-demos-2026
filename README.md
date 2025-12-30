@@ -2,6 +2,8 @@
 
 A 2026 minimal demo setup for building 3D scenes with Three.js.
 
+## Game Controller Notes
+
 | Index | PlayStation Button                       |
 | ----: | ---------------------------------------- |
 |     0 | ✕ (Cross)                                |
@@ -23,10 +25,11 @@ A 2026 minimal demo setup for building 3D scenes with Three.js.
 |    16 | PS (PlayStation button)                  |
 |    17 | Touchpad press (DualShock 4 / DualSense) |
 
-Axes (gamepad.axes[index])
-| Index | Control |
+### Axes (gamepad.axes[index])
+
+| Index | Control                           |
 | ----: | --------------------------------- |
-| 0 | Left stick X (-1 left → +1 right) |
-| 1 | Left stick Y (-1 up → +1 down) |
-| 2 | Right stick X |
-| 3 | Right stick Y |
+|     0 | Left stick X (-1 left → +1 right) |
+|     1 | Left stick Y (-1 up → +1 down)    |
+|     2 | Right stick X                     |
+|     3 | Right stick Y                     |

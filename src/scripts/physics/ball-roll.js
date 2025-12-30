@@ -5,10 +5,8 @@ import "./../../styles/app.scss";
 // APP
 // -------------------------
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import Stats from "three/addons/libs/stats.module.js";
 import GUI from "lil-gui";
-import { strToU8 } from "three/examples/jsm/libs/fflate.module.js";
 
 import("@dimforge/rapier3d").then((RAPIER) => {
   // GLOBAL(S)
@@ -48,7 +46,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   // -------------------------
   const scene = new THREE.Scene();
 
-  // HELPERS
+  // HELPER(S)
   // -------------------------
   const grid = new THREE.GridHelper(1000, 500, 0xeeeeee, 0x666666);
   scene.add(grid);
@@ -110,7 +108,6 @@ import("@dimforge/rapier3d").then((RAPIER) => {
       case "s":
         dir.z = value;
         break;
-        a;
 
       case "a":
         dir.x = -value;
@@ -131,14 +128,53 @@ import("@dimforge/rapier3d").then((RAPIER) => {
     rigidBody.applyImpulse({ x: dir.x, y: dir.y, z: dir.z }, true);
   });
 
-  // RAPIER
+  window.addEventListener("gamepadconnected", (e) => {
+    gamepadHandler(e);
+  });
+
+  const gamepadHandler = (e) => {
+    const gamepads = navigator.getGamepads();
+
+    if (!gamepads) {
+      return;
+    }
+
+    const gp = gamepads[0];
+    const dir = { x: 0, y: 0, z: 0 };
+    const value = 0.01;
+
+    if (gp.buttons[12].pressed) {
+      dir.z = -value;
+    }
+
+    if (gp.buttons[13].pressed) {
+      dir.z = value;
+    }
+
+    if (gp.buttons[14].pressed) {
+      dir.x = -value;
+    }
+
+    if (gp.buttons[15].pressed) {
+      dir.x = value;
+    }
+
+    if (gp.buttons[0].pressed) {
+      dir.y = value * 5;
+    }
+
+    rigidBody.applyImpulse({ x: dir.x, y: dir.y, z: dir.z }, true);
+
+    requestAnimationFrame(gamepadHandler);
+  };
+
+  // PHYSIC(S) - RAPIER
   // https://rapier.rs/docs/user_guides/javascript/getting_started_js
   // -------------------------
   let gravity = { x: 0.0, y: -9.81, z: 0.0 };
   let world = new RAPIER.World(gravity);
 
   // Ground
-  // -------------------------
   let groundColliderDesc = RAPIER.ColliderDesc.cuboid(125.0, 0.1, 125.0)
     .setRestitution(0.2)
     .setFriction(0.8);
@@ -146,7 +182,6 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   world.createCollider(groundColliderDesc);
 
   // Rigid body
-  // -------------------------
   let rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
     .setTranslation(0.0, sphere.position.y, 0.0)
     .setLinearDamping(0.5)
@@ -155,7 +190,6 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   let rigidBody = world.createRigidBody(rigidBodyDesc);
 
   // Collider
-  // -------------------------
   let colliderDesc = RAPIER.ColliderDesc.ball(0.25)
     .setRestitution(0.96)
     .setRestitutionCombineRule(RAPIER.CoefficientCombineRule.Average)
@@ -164,7 +198,6 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   world.createCollider(colliderDesc, rigidBody);
 
   // Render
-  // -------------------------
   function render(now) {
     let delta = (now - lastTime) / 1000;
     lastTime = now;

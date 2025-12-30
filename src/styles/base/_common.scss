@@ -1,0 +1,28 @@
+// ============================================
+// APP: Base - Common
+// ============================================
+
+:root {
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow: hidden;
+
+  &.has-touch {
+  }
+
+  &.no-js {
+  }
+
+  body {
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+}

@@ -1,0 +1,41 @@
+// ============================================
+// APP: Base - Debugger
+// ============================================
+
+$debug: true;
+
+@if $debug {
+  //   body {
+  //     @include media-breakpoint-up(xs) {
+  //       border: 2px solid red;
+  //     }
+
+  //     @include media-breakpoint-up(sm) {
+  //       border: 2px solid green;
+  //     }
+
+  //     @include media-breakpoint-up(md) {
+  //       border: 2px solid blue;
+  //     }
+
+  //     @include media-breakpoint-up(lg) {
+  //       border: 2px solid lightsalmon;
+  //     }
+
+  //     @include media-breakpoint-up(xl) {
+  //       border: 2px solid magenta;
+  //     }
+
+  //     .container {
+  //       border: 2px solid rgb(62, 212, 228);
+
+  //       .row {
+  //         border: 2px solid rgb(228, 0, 87);
+  //       }
+
+  //       div[class*="col"] {
+  //         background: rgba(255, 100, 225, 0.05);
+  //       }
+  //     }
+  //   }
+}

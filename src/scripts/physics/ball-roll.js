@@ -14,7 +14,6 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   // GLOBAL(S)
   // -------------------------
   let lastTime = performance.now();
-  let mouseDown = false;
   const sizes = {
     width: window.innerWidth,
     height: window.innerHeight,
@@ -85,11 +84,6 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   );
 
   scene.add(camera);
-
-  // CONTROL(S)
-  // -------------------------
-  // const controls = new OrbitControls(camera, canvas);
-  // controls.enableDamping = false;
 
   // HANDLER(S)
   // -------------------------
@@ -180,15 +174,14 @@ import("@dimforge/rapier3d").then((RAPIER) => {
     world.step();
 
     let position = rigidBody.translation();
-    sphere.position.x = position.x;
-    sphere.position.y = position.y;
-    sphere.position.z = position.z;
+
+    sphere.position.set(position.x, position.y, position.z);
 
     camera.position.set(position.x + 6, 6, position.z + 6);
     camera.lookAt(position.x, position.y, position.z);
 
-    // controls.update();
     renderer.render(scene, camera);
+
     stats.update();
 
     requestAnimationFrame(render);

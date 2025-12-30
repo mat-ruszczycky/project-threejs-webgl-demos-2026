@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="canonical" href="https://site-name.com/" />
-        <title>Project: Physics Setup</title>
+        <title>Physics: Ball Rolling/Jump (WASD, Space)</title>
         <meta name="description" content="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
         <meta property="og:title" content="Project: Name Goes Here" />
         <meta property="og:description" content="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
@@ -17,7 +17,17 @@
         <meta name="twitter:card" content="summary_large_image" />
     </head>
   <body>
-    <canvas id="webgl"></canvas>
+    <header id="header">  
+      <ul>
+        <li>FPS : Frames rendered in the last second (The higher the number the better)</li>
+        <li>MS  : Milliseconds needed to render a frame (The lower the number the better)</li>
+        <li>MB  : MBytes of allocated memory (Run Chrome with --enable-precise-memory-info)</li>
+      </ul>
+    </header>
+    <main>
+      <canvas id="webgl"></canvas>
+    </main>
+    <footer id="footer">WASD: To move || D-Pad on Playstation controller</footer>
     <script defer type="module" src="./../scripts/physics/ball-roll.js"></script>
   </body>
 </html>

@@ -12,6 +12,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   // GLOBAL(S)
   // -------------------------
   let lastTime = performance.now();
+  let delta = 0;
   const sizes = {
     width: window.innerWidth,
     height: window.innerHeight,
@@ -28,6 +29,8 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   const gui = new GUI();
   const stats = new Stats();
   document.body.appendChild(stats.dom);
+  stats.dom.style.transform = "scale(1.5)";
+  stats.dom.style.transformOrigin = "top left";
 
   // RENDERER
   // -------------------------
@@ -48,7 +51,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
   // HELPER(S)
   // -------------------------
-  const grid = new THREE.GridHelper(1000, 500, 0xeeeeee, 0x666666);
+  const grid = new THREE.GridHelper(250, 100, 0xeeeeee, 0x666666);
   scene.add(grid);
 
   const axis = new THREE.AxesHelper(5.5);
@@ -98,7 +101,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
   window.addEventListener("keydown", (e) => {
     const dir = { x: 0, y: 0, z: 0 };
-    const value = 0.1;
+    const value = delta * 20;
 
     switch (e.key) {
       case "w":
@@ -141,7 +144,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
     const gp = gamepads[0];
     const dir = { x: 0, y: 0, z: 0 };
-    const value = 0.01;
+    const value = delta;
 
     if (gp.buttons[12].pressed) {
       dir.z = -value;
@@ -199,10 +202,8 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
   // Render
   function render(now) {
-    let delta = (now - lastTime) / 1000;
+    delta = Math.min((now - lastTime) / 1000, 0.1);
     lastTime = now;
-
-    delta = Math.min(delta, 0.1);
 
     world.step();
 

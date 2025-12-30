@@ -3,6 +3,8 @@
 // ============================================
 
 :root {
+  --base-size: 4em;
+  --base-color: #fff;
 }
 
 * {
@@ -11,11 +13,11 @@
 
 html {
   overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: var(--base-color);
 
-  &.has-touch {
-  }
-
-  &.no-js {
+  a {
+    color: var(--base-color);
   }
 
   body {

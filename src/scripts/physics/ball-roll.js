@@ -62,6 +62,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   // RENDERER
   // -------------------------
   const canvas = document.querySelector("#webgl");
+  const clearColor = new THREE.Color(0x1a1a1a);
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     antialias: true,
@@ -70,11 +71,12 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x1a1a1a);
+  renderer.setClearColor(clearColor);
 
   // SCENE
   // -------------------------
   const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(clearColor, 1, 30);
 
   // HELPER(S)
   // -------------------------

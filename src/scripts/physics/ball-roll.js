@@ -204,13 +204,12 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   function render(now) {
     stats.begin();
 
+    // Delta Time Pattern
     delta = Math.min((now - lastTime) / 1000, 0.1);
     lastTime = now;
 
-    // Update gamepad input state
     updateGamepadInput();
 
-    // Apply input forces
     const dir = { x: 0, y: 0, z: 0 };
     const moveForce = 1;
 

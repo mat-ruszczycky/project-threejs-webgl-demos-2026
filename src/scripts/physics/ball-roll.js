@@ -13,9 +13,22 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   // -------------------------
   let lastTime = performance.now();
   let delta = 0;
+  let accumulator = 0;
+  const FIXED_TIMESTEP = 1 / 60; // 60 FPS physics updates
+  const MAX_SUBSTEPS = 5; // Prevent spiral of death
   const sizes = {
     width: window.innerWidth,
     height: window.innerHeight,
+  };
+
+  // INPUT STATE
+  // -------------------------
+  const inputState = {
+    forward: false,
+    backward: false,
+    left: false,
+    right: false,
+    jump: false,
   };
 
   // DEBUG
@@ -103,75 +116,57 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   });
 
   window.addEventListener("keydown", (e) => {
-    const dir = { x: 0, y: 0, z: 0 };
-    const value = delta * 20;
-
     switch (e.key) {
       case "w":
-        dir.z = -value;
+        inputState.forward = true;
         break;
 
       case "s":
-        dir.z = value;
+        inputState.backward = true;
         break;
 
       case "a":
-        dir.x = -value;
+        inputState.left = true;
         break;
 
       case "d":
-        dir.x = value;
+        inputState.right = true;
         break;
 
       case " ":
-        dir.y = value * 3;
+        inputState.jump = true;
         break;
 
       default:
         break;
     }
-
-    rigidBody.applyImpulse({ x: dir.x, y: dir.y, z: dir.z }, true);
   });
 
-  window.addEventListener("gamepadconnected", (e) => {
-    gamepadHandler(e);
+  window.addEventListener("keyup", (e) => {
+    inputState.forward = false;
+    inputState.backward = false;
+    inputState.left = false;
+    inputState.right = false;
+    inputState.jump = false;
   });
 
-  const gamepadHandler = (e) => {
+  // GAMEPAD INPUT
+  // -------------------------
+  const updateGamepadInput = () => {
     const gamepads = navigator.getGamepads();
 
-    if (!gamepads) {
+    if (!gamepads || !gamepads[0]) {
       return;
     }
 
     const gp = gamepads[0];
-    const dir = { x: 0, y: 0, z: 0 };
-    const value = delta;
 
-    if (gp.buttons[12].pressed) {
-      dir.z = -value;
-    }
-
-    if (gp.buttons[13].pressed) {
-      dir.z = value;
-    }
-
-    if (gp.buttons[14].pressed) {
-      dir.x = -value;
-    }
-
-    if (gp.buttons[15].pressed) {
-      dir.x = value;
-    }
-
-    if (gp.buttons[0].pressed) {
-      dir.y = value * 5;
-    }
-
-    rigidBody.applyImpulse({ x: dir.x, y: dir.y, z: dir.z }, true);
-
-    requestAnimationFrame(gamepadHandler);
+    // D-pad or left stick
+    inputState.forward = gp.buttons[12]?.pressed || gp.axes[1] < -0.5;
+    inputState.backward = gp.buttons[13]?.pressed || gp.axes[1] > 0.5;
+    inputState.left = gp.buttons[14]?.pressed || gp.axes[0] < -0.5;
+    inputState.right = gp.buttons[15]?.pressed || gp.axes[0] > 0.5;
+    inputState.jump = gp.buttons[0]?.pressed;
   };
 
   // PHYSIC(S) - RAPIER
@@ -179,6 +174,8 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   // -------------------------
   let gravity = { x: 0.0, y: -9.81, z: 0.0 };
   let world = new RAPIER.World(gravity);
+  world.timestep = FIXED_TIMESTEP;
+  let eventQueue = new RAPIER.EventQueue(true);
 
   // Ground
   let groundColliderDesc = RAPIER.ColliderDesc.cuboid(125.0, 0.1, 125.0)
@@ -196,7 +193,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   let rigidBody = world.createRigidBody(rigidBodyDesc);
 
   // Collider
-  let colliderDesc = RAPIER.ColliderDesc.ball(0.25)
+  let colliderDesc = RAPIER.ColliderDesc.ball(sphere.geometry.parameters.radius)
     .setRestitution(0.96)
     .setRestitutionCombineRule(RAPIER.CoefficientCombineRule.Average)
     .setFriction(0.6);
@@ -205,29 +202,59 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
   // Render
   function render(now) {
+    stats.begin();
+
     delta = Math.min((now - lastTime) / 1000, 0.1);
     lastTime = now;
 
-    world.step();
+    // Update gamepad input state
+    updateGamepadInput();
+
+    // Apply input forces
+    const dir = { x: 0, y: 0, z: 0 };
+    const moveForce = 1;
+
+    if (inputState.forward) dir.z -= moveForce;
+    if (inputState.backward) dir.z += moveForce;
+    if (inputState.left) dir.x -= moveForce;
+    if (inputState.right) dir.x += moveForce;
+
+    if (inputState.jump) {
+      dir.y += moveForce * 2;
+      inputState.jump = false;
+    }
+
+    if (dir.x !== 0 || dir.y !== 0 || dir.z !== 0) {
+      rigidBody.applyImpulse(dir, true);
+    }
+
+    // Fixed Timestep Accumulator Pattern
+    let steps = 0;
+    accumulator += delta;
+
+    while (accumulator >= FIXED_TIMESTEP && steps < MAX_SUBSTEPS) {
+      world.step(eventQueue);
+      accumulator -= FIXED_TIMESTEP;
+      steps++;
+    }
 
     let position = rigidBody.translation();
 
     if (position.y <= -10) {
-      rigidBody.setTranslation(new THREE.Vector3(6, 10, 6));
+      rigidBody.setTranslation({ x: 6, y: 10, z: 6 });
       position = rigidBody.translation();
     }
 
     sphere.position.set(position.x, position.y, position.z);
-
     camera.position.set(position.x + 6, 6, position.z + 6);
     camera.lookAt(position.x, position.y, position.z);
 
     renderer.render(scene, camera);
 
-    stats.update();
+    stats.end();
 
     requestAnimationFrame(render);
   }
 
-  render();
+  requestAnimationFrame(render);
 });

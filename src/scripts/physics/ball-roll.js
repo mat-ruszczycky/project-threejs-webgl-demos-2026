@@ -29,6 +29,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
     left: false,
     right: false,
     jump: false,
+    src: null,
   };
 
   // DEBUG
@@ -45,20 +46,17 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
   const statsFPS = new Stats();
   statsFPS.showPanel(0);
-  statsFPS.dom.style.cssText =
-    "position:absolute;top:0px;left:0px;transform:scale(1.5);transform-origin:top left;";
+  statsFPS.dom.style.cssText = "position:absolute;top:0px;left:0px;";
   document.body.appendChild(statsFPS.dom);
 
   const statsMS = new Stats();
   statsMS.showPanel(1);
-  statsMS.dom.style.cssText =
-    "position:absolute;top:72px;left:0;transform:scale(1.5);transform-origin:top left;";
+  statsMS.dom.style.cssText = "position:absolute;top:48px;left:0;";
   document.body.appendChild(statsMS.dom);
 
   const statsMB = new Stats();
   statsMB.showPanel(2);
-  statsMB.dom.style.cssText =
-    "position:absolute;top:144px;left:0;transform:scale(1.5);transform-origin:top left;"; // 80px + 80px
+  statsMB.dom.style.cssText = "position:absolute;top:96px;left:0;";
   document.body.appendChild(statsMB.dom);
 
   // RENDERER
@@ -148,6 +146,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
       case " ":
         inputState.jump = true;
+        inputState.src = "keypad";
         break;
 
       default:
@@ -180,6 +179,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
     inputState.left = gp.buttons[14]?.pressed || gp.axes[0] < -0.5;
     inputState.right = gp.buttons[15]?.pressed || gp.axes[0] > 0.5;
     inputState.jump = gp.buttons[0]?.pressed;
+    inputState.src = "gamepad";
   };
 
   // PHYSIC(S) - RAPIER
@@ -232,8 +232,9 @@ import("@dimforge/rapier3d").then((RAPIER) => {
     if (inputState.right) dir.x += moveForce;
 
     if (inputState.jump) {
-      dir.y += moveForce * 2;
+      dir.y += moveForce * (inputState.src === "keypad" ? 7 : 0.7);
       inputState.jump = false;
+      inputState.src = null;
     }
 
     if (dir.x !== 0 || dir.y !== 0 || dir.z !== 0) {

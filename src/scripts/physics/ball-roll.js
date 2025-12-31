@@ -43,10 +43,23 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   gui.title("Debugger");
   gui.close();
 
-  const stats = new Stats();
-  stats.dom.style.transform = "scale(1.5)";
-  stats.dom.style.transformOrigin = "top left";
-  document.body.appendChild(stats.dom);
+  const statsFPS = new Stats();
+  statsFPS.showPanel(0);
+  statsFPS.dom.style.cssText =
+    "position:absolute;top:0px;left:0px;transform:scale(1.5);transform-origin:top left;";
+  document.body.appendChild(statsFPS.dom);
+
+  const statsMS = new Stats();
+  statsMS.showPanel(1);
+  statsMS.dom.style.cssText =
+    "position:absolute;top:72px;left:0;transform:scale(1.5);transform-origin:top left;";
+  document.body.appendChild(statsMS.dom);
+
+  const statsMB = new Stats();
+  statsMB.showPanel(2);
+  statsMB.dom.style.cssText =
+    "position:absolute;top:144px;left:0;transform:scale(1.5);transform-origin:top left;"; // 80px + 80px
+  document.body.appendChild(statsMB.dom);
 
   // RENDERER
   // -------------------------
@@ -172,19 +185,18 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   // PHYSIC(S) - RAPIER
   // https://rapier.rs/docs/user_guides/javascript/getting_started_js
   // -------------------------
-  let gravity = { x: 0.0, y: -9.81, z: 0.0 };
+  let gravity = { x: 0.0, y: -30, z: 0.0 };
   let world = new RAPIER.World(gravity);
-  world.timestep = FIXED_TIMESTEP;
   let eventQueue = new RAPIER.EventQueue(true);
 
-  // Ground
+  world.timestep = FIXED_TIMESTEP;
+
   let groundColliderDesc = RAPIER.ColliderDesc.cuboid(125.0, 0.1, 125.0)
     .setRestitution(0.2)
     .setFriction(0.8);
 
   world.createCollider(groundColliderDesc);
 
-  // Rigid body
   let rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
     .setTranslation(0.0, sphere.position.y, 0.0)
     .setLinearDamping(0.5)
@@ -192,7 +204,6 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
   let rigidBody = world.createRigidBody(rigidBodyDesc);
 
-  // Collider
   let colliderDesc = RAPIER.ColliderDesc.ball(sphere.geometry.parameters.radius)
     .setRestitution(0.96)
     .setRestitutionCombineRule(RAPIER.CoefficientCombineRule.Average)
@@ -202,7 +213,9 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
   // Render
   function render(now) {
-    stats.begin();
+    statsFPS.begin();
+    statsMB.begin();
+    statsMS.begin();
 
     // Delta Time Pattern
     delta = Math.min((now - lastTime) / 1000, 0.1);
@@ -250,7 +263,9 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
     renderer.render(scene, camera);
 
-    stats.end();
+    statsFPS.end();
+    statsMB.end();
+    statsMS.end();
 
     requestAnimationFrame(render);
   }

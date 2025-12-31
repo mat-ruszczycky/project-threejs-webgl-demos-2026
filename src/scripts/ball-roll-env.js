@@ -1,6 +1,6 @@
 // STYLE(S)
 // -------------------------
-import "./../../styles/app.scss";
+import "./../styles/app.scss";
 
 // APP
 // -------------------------

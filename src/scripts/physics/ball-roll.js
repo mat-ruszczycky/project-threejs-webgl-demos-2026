@@ -27,10 +27,13 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   // MB  : MBytes of allocated memory (Run Chrome with --enable-precise-memory-info)
   // -------------------------
   const gui = new GUI();
+  gui.title("Debugger");
+  gui.close();
+
   const stats = new Stats();
-  document.body.appendChild(stats.dom);
   stats.dom.style.transform = "scale(1.5)";
   stats.dom.style.transformOrigin = "top left";
+  document.body.appendChild(stats.dom);
 
   // RENDERER
   // -------------------------
@@ -208,6 +211,11 @@ import("@dimforge/rapier3d").then((RAPIER) => {
     world.step();
 
     let position = rigidBody.translation();
+
+    if (position.y <= -10) {
+      rigidBody.setTranslation(new THREE.Vector3(6, 10, 6));
+      position = rigidBody.translation();
+    }
 
     sphere.position.set(position.x, position.y, position.z);
 

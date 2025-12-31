@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "lazy": "git add . && git commit -m 'chore: checkpoint' && git push",
     "preview": "vite preview",
     "open:repo": "open https://github.com/mat-ruszczycky/project-threejs-webgl-demos-2026"
   },

@@ -2,6 +2,35 @@
 
 A 2026 minimal demo setup for building 3D scenes with Three.js.
 
+## Perfomance Notes
+
+**Frames rendered in the last second**
+This is how many images your computer managed to draw on the screen in one second.
+
+- Higher = smoother motion
+- Around **60** is what most screens aim for
+- Low numbers = choppy, stuttery visuals
+
+**Milliseconds needed to render a frame**
+This is how long it takes to draw **one** of those images.
+
+- Lower = faster and smoother
+- About **16 ms per frame** ≈ 60 frames per second
+- If this number goes up, performance goes down
+
+**MBytes of allocated memory**
+This is how much RAM the page/app is using.
+
+- More memory = heavier load on your system
+- Too much can slow things down or cause crashes
+- Chrome needs that `--enable-precise-memory-info` flag to show accurate numbers instead of rough guesses
+
+**TLDR:**
+
+- High FPS + low milliseconds = good performance
+- Low FPS + high milliseconds = something is struggling
+- Memory keeps climbing = possible memory leak or inefficient code
+
 ## Game Controller Notes
 
 | Index | PlayStation Button                       |

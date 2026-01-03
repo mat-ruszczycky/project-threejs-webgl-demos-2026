@@ -4,55 +4,124 @@
 import "./../../styles/app.scss";
 
 // -------------------------
-// APP
+// LIB(S)
 // -------------------------
 import * as THREE from "three";
 import Stats from "three/addons/libs/stats.module.js";
 import { Pane } from "tweakpane";
 
-// -------------------------
-// CORE - ECS
-// -------------------------
-const createEntity = () => self.crypto.randomUUID();
+// -----------------------------
+// CORE - Entity management
+// -----------------------------
 
-const Components = {
-  Mesh: new Map(),
-  Physics: new Map(),
-  Input: new Map(),
-  Player: new Set(),
+// Tracks all live entities.
+// Required for cleanup, debugging, and preventing leaks.
+const Entities = new Set();
+
+// Creates a new entity identifier.
+const createEntity = () => {
+  const id = self.crypto.randomUUID();
+  Entities.add(id);
+  return id;
 };
 
+// Destroys an entity and removes it from all component storage.
+const destroyEntity = (entity) => {
+  if (!Entities.has(entity)) return;
+
+  Entities.delete(entity);
+
+  for (const component of Object.values(Components)) {
+    component.delete(entity);
+  }
+};
+
+// -----------------------------
+// CORE - Component storage
+// -----------------------------
+
+// Central registry for all component storage.
+const Components = Object.freeze({
+  Mesh: new Map(), // Map<Entity, MeshData>
+  Physics: new Map(), // Map<Entity, PhysicsData>
+  Input: new Map(), // Map<Entity, InputData>
+  Player: new Set(), // Set<Entity>
+});
+
+// -----------------------------
+// Component helpers
+// -----------------------------
+
+// Returns an iterator of entities contained in a component store.
 const getEntities = (component) => {
   if (component instanceof Map) return component.keys();
   if (component instanceof Set) return component.values();
-  throw new Error("Invalid component");
+  throw new Error("Invalid component storage (expected Map or Set)");
 };
 
+// Checks whether a component store contains an entity.
+const hasEntity = (component, entity) => {
+  if (component instanceof Map || component instanceof Set) {
+    return component.has(entity);
+  }
+  return false;
+};
+
+// Adds a component to an entity.
+const addComponent = (component, entity, data) => {
+  if (!Entities.has(entity)) {
+    throw new Error("Cannot add component to non-existent entity");
+  }
+
+  if (component instanceof Map) {
+    component.set(entity, data);
+    return;
+  }
+
+  if (component instanceof Set) {
+    component.add(entity);
+    return;
+  }
+
+  throw new Error("Invalid component storage");
+};
+
+// Removes a component from an entity.
+const removeComponent = (component, entity) => {
+  component.delete(entity);
+};
+
+// -----------------------------
+// Query system
+// -----------------------------
+
+// Finds entities that exist in *all* provided component stores.
 const query = (...components) => {
-  const [first, ...rest] = components;
+  if (components.length === 0) return [];
+
+  // Sort by size so we iterate the smallest set first
+  const sorted = [...components].sort((a, b) => a.size - b.size);
+  const [base, ...rest] = sorted;
+
   const result = [];
 
-  for (const e of getEntities(first)) {
-    let ok = true;
-
-    for (const c of rest) {
-      if (c instanceof Map && !c.has(e)) ok = false;
-      if (c instanceof Set && !c.has(e)) ok = false;
+  for (const entity of getEntities(base)) {
+    // Entity must exist in every remaining component store
+    if (rest.every((c) => hasEntity(c, entity))) {
+      result.push(entity);
     }
-
-    if (ok) result.push(e);
   }
 
   return result;
 };
 
 // -------------------------
-// CORE - DEBUG
+// CORE - DEBUG (Tweakplane - https://github.com/cocopon/tweakpane)
 // -------------------------
-// Tweakplane - https://github.com/cocopon/tweakpane
 const PARAMS = {
   paused: false,
 };
+
 const pane = new Pane({ title: "Debugger" });
 
 pane.addBinding(PARAMS, "paused", { label: "Paused" }).on("change", (ev) => {
@@ -96,6 +165,7 @@ const renderer = new THREE.WebGLRenderer({
   antialias: true,
   powerPreference: "high-performance",
 });
+
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
@@ -130,7 +200,7 @@ scene.add(new THREE.DirectionalLight());
 // CORE - PHYSICS
 // -------------------------
 const Rapier = await import("@dimforge/rapier3d");
-const world = new Rapier.World({ x: 0, y: -30, z: 0 });
+const world = new Rapier.World({ x: 0, y: -(9.81 * 2), z: 0 });
 
 world.createCollider(
   Rapier.ColliderDesc.cuboid(125, 0.1, 125).setFriction(0.8).setRestitution(0.2)
@@ -298,4 +368,3 @@ const render = () => {
 };
 
 requestAnimationFrame(render);
-window.comps = Components;

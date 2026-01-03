@@ -5,261 +5,256 @@ import GUI from "lil-gui";
 
 import("@dimforge/rapier3d").then((RAPIER) => {
   // =========================
-  // ECS STRUCTURE
+  // ECS CORE
   // =========================
-  const Entities = [];
+  let nextEntityId = 0;
+  const createEntity = () => nextEntityId++;
+
   const Components = {
     Mesh: new Map(),
     Physics: new Map(),
     Input: new Map(),
+    Player: new Set(),
+  };
+
+  const getEntities = (component) => {
+    if (component instanceof Map) return component.keys();
+    if (component instanceof Set) return component.values();
+    throw new Error("Invalid component");
+  };
+
+  const query = (...components) => {
+    const [first, ...rest] = components;
+    const result = [];
+
+    for (const e of getEntities(first)) {
+      let ok = true;
+
+      for (const c of rest) {
+        if (c instanceof Map && !c.has(e)) ok = false;
+        if (c instanceof Set && !c.has(e)) ok = false;
+      }
+
+      if (ok) result.push(e);
+    }
+
+    return result;
   };
 
   // =========================
-  // DEBUGGER / STATS
+  // DEBUG
   // =========================
-  const debuggerGUI = new GUI();
-  debuggerGUI.title("Debugger");
-  debuggerGUI.close();
+  const gui = new GUI();
+  gui.title("Debugger").close();
 
-  const createStatsPanel = (panel, top) => {
-    const stats = new Stats();
-    stats.showPanel(panel);
-    stats.dom.style.cssText = `position:absolute;top:${top}px;left:0;`;
-    document.body.appendChild(stats.dom);
-    return stats;
-  };
-
-  const statsFPS = createStatsPanel(0, 0);
-  const statsMS = createStatsPanel(1, 48);
-  const statsMB = createStatsPanel(2, 96);
+  const stats = new Stats();
+  document.body.appendChild(stats.dom);
 
   // =========================
-  // RENDERER / SCENE
+  // THREE
   // =========================
   const canvas = document.querySelector("#webgl");
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: true,
-    powerPreference: "high-performance",
-  });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
   const clearColor = new THREE.Color(0x1a1a1a);
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(clearColor);
 
   const scene = new THREE.Scene();
+  scene.background = clearColor;
   scene.fog = new THREE.Fog(clearColor, 1, 30);
-  scene.add(new THREE.GridHelper(250, 100, 0xeeeeee, 0x666666));
-  scene.add(new THREE.AxesHelper(5.5));
+
+  scene.add(new THREE.GridHelper(250, 100));
+  scene.add(new THREE.AxesHelper(5));
 
   const camera = new THREE.PerspectiveCamera(
     75,
-    window.innerWidth / window.innerHeight,
+    innerWidth / innerHeight,
     0.1,
     100
   );
+
   scene.add(camera);
 
   window.addEventListener("resize", () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
   });
 
-  // =========================
-  // INPUT SYSTEM
-  // =========================
-  const InputState = {
-    forward: false,
-    backward: false,
-    left: false,
-    right: false,
-    jump: false,
-    src: null,
-    isPaused: false,
-  };
-
-  window.addEventListener("keydown", (e) => {
-    if (InputState.isPaused && e.key !== "Escape") return;
-    switch (e.key) {
-      case "w":
-        InputState.forward = true;
-        break;
-      case "s":
-        InputState.backward = true;
-        break;
-      case "a":
-        InputState.left = true;
-        break;
-      case "d":
-        InputState.right = true;
-        break;
-      case " ":
-        InputState.jump = true;
-        InputState.src = "keypad";
-        break;
-      case "Escape":
-        togglePause();
-        break;
-    }
-  });
-
-  window.addEventListener("keyup", () => {
-    InputState.forward = false;
-    InputState.backward = false;
-    InputState.left = false;
-    InputState.right = false;
-    InputState.jump = false;
-  });
-
-  const updateGamepad = () => {
-    if (InputState.isPaused) return;
-    const gp = navigator.getGamepads()?.[0];
-    if (!gp) return;
-
-    InputState.forward = gp.buttons[12]?.pressed || gp.axes[1] < -0.5;
-    InputState.backward = gp.buttons[13]?.pressed || gp.axes[1] > 0.5;
-    InputState.left = gp.buttons[14]?.pressed || gp.axes[0] < -0.5;
-    InputState.right = gp.buttons[15]?.pressed || gp.axes[0] > 0.5;
-    InputState.jump = gp.buttons[0]?.pressed;
-    InputState.src = "gamepad";
-  };
-
-  const togglePause = () => {
-    InputState.isPaused = !InputState.isPaused;
-    document.body.classList.toggle("paused", InputState.isPaused);
-  };
+  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+  scene.add(new THREE.DirectionalLight());
 
   // =========================
-  // PHYSICS SYSTEM
+  // PHYSICS
   // =========================
-  const FIXED_TIMESTEP = 1 / 60;
-  const MAX_SUBSTEPS = 5;
-  let accumulator = 0;
-
   const world = new RAPIER.World({ x: 0, y: -30, z: 0 });
-  world.timestep = FIXED_TIMESTEP;
-  const eventQueue = new RAPIER.EventQueue(true);
 
-  // Ground
   world.createCollider(
     RAPIER.ColliderDesc.cuboid(125, 0.1, 125)
       .setFriction(0.8)
       .setRestitution(0.2)
   );
 
-  // Create sphere entity
-  const sphereEntity = Entities.length;
-  Entities.push(sphereEntity);
+  // =========================
+  // GAME STATE (PAUSE)
+  // =========================
+  const GameState = {
+    paused: false,
+  };
 
-  const sphereMesh = new THREE.Mesh(
+  const togglePause = () => {
+    GameState.paused = !GameState.paused;
+    document.body.classList.toggle("paused", GameState.paused);
+  };
+
+  // =========================
+  // RAW INPUT
+  // =========================
+  const rawInput = {
+    forward: false,
+    backward: false,
+    left: false,
+    right: false,
+    jump: false,
+  };
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      togglePause();
+      return;
+    }
+
+    if (GameState.paused) return;
+
+    if (e.key === "w") rawInput.forward = true;
+    if (e.key === "s") rawInput.backward = true;
+    if (e.key === "a") rawInput.left = true;
+    if (e.key === "d") rawInput.right = true;
+    if (e.key === " ") rawInput.jump = true;
+  });
+
+  window.addEventListener("keyup", (e) => {
+    if (GameState.paused) return;
+
+    if (e.key === "w") rawInput.forward = false;
+    if (e.key === "s") rawInput.backward = false;
+    if (e.key === "a") rawInput.left = false;
+    if (e.key === "d") rawInput.right = false;
+  });
+
+  // =========================
+  // ENTITY: PLAYER
+  // =========================
+  const player = createEntity();
+  Components.Player.add(player);
+
+  Components.Input.set(player, {
+    forward: false,
+    backward: false,
+    left: false,
+    right: false,
+    jump: false,
+  });
+
+  const mesh = new THREE.Mesh(
     new THREE.SphereGeometry(0.5, 32, 32),
-    new THREE.MeshStandardMaterial({ roughness: 0.7 })
+    new THREE.MeshStandardMaterial({ roughness: 0.6 })
   );
 
-  sphereMesh.position.y = 6;
-  scene.add(sphereMesh);
-  Components.Mesh.set(sphereEntity, sphereMesh);
+  mesh.position.y = 6;
+  scene.add(mesh);
+  Components.Mesh.set(player, mesh);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-  scene.add(new THREE.DirectionalLight());
-
-  const sphereBody = world.createRigidBody(
-    RAPIER.RigidBodyDesc.dynamic()
-      .setTranslation(0, 6, 0)
-      .setLinearDamping(0.5)
-      .setCanSleep(true)
+  const body = world.createRigidBody(
+    RAPIER.RigidBodyDesc.dynamic().setTranslation(0, 6, 0).setLinearDamping(0.5)
   );
 
   world.createCollider(
-    RAPIER.ColliderDesc.ball(0.5).setFriction(0.6).setRestitution(0.96),
-    sphereBody
+    RAPIER.ColliderDesc.ball(0.5).setFriction(0.6).setRestitution(0.2),
+    body
   );
 
-  Components.Physics.set(sphereEntity, sphereBody);
+  Components.Physics.set(player, body);
 
   // =========================
   // SYSTEMS
   // =========================
   const InputSystem = () => {
-    updateGamepad();
-  };
+    if (GameState.paused) return;
 
-  const PhysicsSystem = (delta) => {
-    accumulator += delta;
-    let steps = 0;
-    while (accumulator >= FIXED_TIMESTEP && steps < MAX_SUBSTEPS) {
-      world.step(eventQueue);
-      accumulator -= FIXED_TIMESTEP;
-      steps++;
+    for (const e of Components.Input.keys()) {
+      const input = Components.Input.get(e);
+      input.forward = rawInput.forward;
+      input.backward = rawInput.backward;
+      input.left = rawInput.left;
+      input.right = rawInput.right;
+      input.jump = rawInput.jump;
     }
+
+    rawInput.jump = false;
   };
 
   const MovementSystem = () => {
-    const dir = { x: 0, y: 0, z: 0 };
-    const force = 1;
+    if (GameState.paused) return;
 
-    if (InputState.forward) dir.z -= force;
-    if (InputState.backward) dir.z += force;
-    if (InputState.left) dir.x -= force;
-    if (InputState.right) dir.x += force;
+    for (const e of query(Components.Input, Components.Physics)) {
+      const input = Components.Input.get(e);
+      const body = Components.Physics.get(e);
+      const impulse = { x: 0, y: 0, z: 0 };
 
-    if (InputState.jump) {
-      dir.y += force * (InputState.src === "keypad" ? 7 : 0.7);
-      InputState.jump = false;
-      InputState.src = null;
+      if (input.forward) impulse.z -= 1;
+      if (input.backward) impulse.z += 1;
+      if (input.left) impulse.x -= 1;
+      if (input.right) impulse.x += 1;
+      if (input.jump) impulse.y += 7;
+
+      if (impulse.x || impulse.y || impulse.z) {
+        body.applyImpulse(impulse, true);
+      }
     }
+  };
 
-    const body = Components.Physics.get(sphereEntity);
-    if (dir.x || dir.y || dir.z) body.applyImpulse(dir, true);
+  const PhysicsSystem = () => {
+    if (GameState.paused) return;
+    world.step();
   };
 
   const RenderSystem = () => {
-    const pos = Components.Physics.get(sphereEntity).translation();
+    for (const e of query(Components.Mesh, Components.Physics)) {
+      const mesh = Components.Mesh.get(e);
+      const body = Components.Physics.get(e);
+      const pos = body.translation();
 
-    if (pos.y <= -10) {
-      Components.Physics.get(sphereEntity).setTranslation(
-        { x: 6, y: 10, z: 6 },
-        true
-      );
+      mesh.position.set(pos.x, pos.y, pos.z);
+
+      if (Components.Player.has(e)) {
+        camera.position.set(pos.x + 6, 6, pos.z + 6);
+        camera.lookAt(pos.x, pos.y, pos.z);
+      }
+
+      if (pos.y < -10) {
+        body.setTranslation({ x: 0, y: 10, z: 0 }, true);
+      }
     }
-
-    const mesh = Components.Mesh.get(sphereEntity);
-    mesh.position.set(pos.x, pos.y, pos.z);
-
-    camera.position.set(pos.x + 6, 6, pos.z + 6);
-    camera.lookAt(pos.x, pos.y, pos.z);
 
     renderer.render(scene, camera);
   };
 
   // =========================
-  // MAIN LOOP
+  // LOOP
   // =========================
-  let lastTime = performance.now();
-
-  const loop = (now) => {
+  const loop = () => {
     requestAnimationFrame(loop);
+    stats.begin();
 
-    statsFPS.begin();
-    statsMS.begin();
-    statsMB.begin();
+    InputSystem();
+    MovementSystem();
+    PhysicsSystem();
+    RenderSystem();
 
-    const delta = Math.min((now - lastTime) / 1000, 0.1);
-    lastTime = now;
-
-    if (!InputState.isPaused) {
-      InputSystem();
-      MovementSystem();
-      PhysicsSystem(delta);
-      RenderSystem();
-    }
-
-    statsFPS.end();
-    statsMS.end();
-    statsMB.end();
+    stats.end();
   };
 
-  requestAnimationFrame(loop);
+  loop();
 });

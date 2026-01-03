@@ -5,8 +5,10 @@ import "./../styles/app.scss";
 // APP
 // -------------------------
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import Stats from "three/addons/libs/stats.module.js";
 import GUI from "lil-gui";
+import { Pane } from "tweakpane";
 
 import("@dimforge/rapier3d").then((RAPIER) => {
   // GLOBAL(S)
@@ -30,11 +32,16 @@ import("@dimforge/rapier3d").then((RAPIER) => {
     src: null,
   };
 
-  // DEBUG
-  // -------------------------
-  const gui = new GUI();
-  gui.title("Debugger");
-  gui.close();
+  // =========================
+  // CORE - DEBUG
+  // =========================
+  // Lil GUI - https://github.com/georgealways/lil-gui
+  // const gui = new GUI();
+  // gui.title("Debugger");
+  // gui.close();
+
+  // Tweakplane - https://github.com/cocopon/tweakpane
+  const pane = new Pane({ title: "Debugger" });
 
   const statsFPS = new Stats();
   statsFPS.showPanel(0);

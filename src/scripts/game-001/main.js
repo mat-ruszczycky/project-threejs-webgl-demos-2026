@@ -1,23 +1,24 @@
+// -------------------------
 // STYLE(S)
 // -------------------------
 import "./../../styles/app.scss";
 
+// -------------------------
 // APP
 // -------------------------
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import Stats from "three/addons/libs/stats.module.js";
-import GUI from "lil-gui";
 import { Pane } from "tweakpane";
 
-// =========================
+// -------------------------
 // CORE - ECS
-// =========================
+// -------------------------
 let nextEntityId = 0;
 const createEntity = () => nextEntityId++;
 
 const Components = {
   Mesh: new Map(),
+  Physics: new Map(),
   Input: new Map(),
   Player: new Set(),
 };
@@ -46,14 +47,9 @@ const query = (...components) => {
   return result;
 };
 
-// =========================
+// -------------------------
 // CORE - DEBUG
-// =========================
-// Lil GUI - https://github.com/georgealways/lil-gui
-// const gui = new GUI();
-// gui.title("Debugger");
-// gui.close();
-
+// -------------------------
 // Tweakplane - https://github.com/cocopon/tweakpane
 const pane = new Pane({ title: "Debugger" });
 
@@ -85,9 +81,9 @@ const endStats = () => {
   statMB.end();
 };
 
-// =========================
+// -------------------------
 // CORE - THREE
-// =========================
+// -------------------------
 const canvas = document.querySelector("#webgl");
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -113,9 +109,6 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 
-camera.position.set(6, 6, 6);
-camera.lookAt(0, 0, 0);
-
 scene.add(camera);
 
 window.addEventListener("resize", () => {
@@ -127,12 +120,19 @@ window.addEventListener("resize", () => {
 scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 scene.add(new THREE.DirectionalLight());
 
-const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = false;
+// -------------------------
+// CORE - PHYSICS
+// -------------------------
+const Rapier = await import("@dimforge/rapier3d");
+const world = new Rapier.World({ x: 0, y: -30, z: 0 });
 
-// =========================
+world.createCollider(
+  Rapier.ColliderDesc.cuboid(125, 0.1, 125).setFriction(0.8).setRestitution(0.2)
+);
+
+// -------------------------
 // CORE - GAME STATE(S) (PAUSE)
-// =========================
+// -------------------------
 const GameState = {
   paused: false,
 };
@@ -142,9 +142,9 @@ const togglePause = () => {
   document.body.classList.toggle("paused", GameState.paused);
 };
 
-// =========================
+// -------------------------
 // CORE - RAW INPUT
-// =========================
+// -------------------------
 const rawInput = {
   forward: false,
   backward: false,
@@ -177,9 +177,9 @@ window.addEventListener("keyup", (e) => {
   if (e.key === "d") rawInput.right = false;
 });
 
-// =========================
+// -------------------------
 // ENTITY: PLAYER
-// =========================
+// -------------------------
 const player = createEntity();
 Components.Player.add(player);
 
@@ -196,13 +196,24 @@ const mesh = new THREE.Mesh(
   new THREE.MeshStandardMaterial({ roughness: 0.6 })
 );
 
-mesh.position.y = 0.5;
+mesh.position.y = 6;
 scene.add(mesh);
 Components.Mesh.set(player, mesh);
 
-// =========================
+const body = world.createRigidBody(
+  Rapier.RigidBodyDesc.dynamic().setTranslation(0, 6, 0).setLinearDamping(0.5)
+);
+
+world.createCollider(
+  Rapier.ColliderDesc.ball(0.5).setFriction(0.6).setRestitution(0.2),
+  body
+);
+
+Components.Physics.set(player, body);
+
+// -------------------------
 // SYSTEMS
-// =========================
+// -------------------------
 const InputSystem = () => {
   if (GameState.paused) return;
 
@@ -218,19 +229,63 @@ const InputSystem = () => {
   rawInput.jump = false;
 };
 
+const MovementSystem = () => {
+  if (GameState.paused) return;
+
+  for (const e of query(Components.Input, Components.Physics)) {
+    const input = Components.Input.get(e);
+    const body = Components.Physics.get(e);
+    const impulse = { x: 0, y: 0, z: 0 };
+
+    if (input.forward) impulse.z -= 1;
+    if (input.backward) impulse.z += 1;
+    if (input.left) impulse.x -= 1;
+    if (input.right) impulse.x += 1;
+    if (input.jump) impulse.y += 7;
+
+    if (impulse.x || impulse.y || impulse.z) {
+      body.applyImpulse(impulse, true);
+    }
+  }
+};
+
+const PhysicsSystem = () => {
+  if (GameState.paused) return;
+  world.step();
+};
+
 const RenderSystem = () => {
-  controls.update();
+  for (const e of query(Components.Mesh, Components.Physics)) {
+    const mesh = Components.Mesh.get(e);
+    const body = Components.Physics.get(e);
+    const pos = body.translation();
+
+    mesh.position.set(pos.x, pos.y, pos.z);
+
+    if (Components.Player.has(e)) {
+      camera.position.set(pos.x + 6, 6, pos.z + 6);
+      camera.lookAt(pos.x, pos.y, pos.z);
+    }
+
+    if (pos.y < -10) {
+      body.setTranslation({ x: 0, y: 10, z: 0 }, true);
+    }
+  }
+
   renderer.render(scene, camera);
 };
 
-// =========================
+// -------------------------
 // RENDER LOOP
-// =========================
+// -------------------------
 const render = () => {
   requestAnimationFrame(render);
   beginStats();
 
+  // Systems
   InputSystem();
+  MovementSystem();
+  PhysicsSystem();
   RenderSystem();
 
   endStats();

@@ -1,6 +1,6 @@
 // STYLE(S)
 // -------------------------
-import "./../styles/app.scss";
+import "./../../styles/app.scss";
 
 // APP
 // -------------------------
@@ -10,14 +10,45 @@ import Stats from "three/addons/libs/stats.module.js";
 import GUI from "lil-gui";
 import { Pane } from "tweakpane";
 
-// GLOBAL(S)
-// -------------------------
-let isPaused = false;
-let lastTime = performance.now();
-let delta = 0;
+// =========================
+// CORE - ECS
+// =========================
+let nextEntityId = 0;
+const createEntity = () => nextEntityId++;
 
-// DEBUG
-// -----------------------------------------------------
+const Components = {
+  Mesh: new Map(),
+  Input: new Map(),
+  Player: new Set(),
+};
+
+const getEntities = (component) => {
+  if (component instanceof Map) return component.keys();
+  if (component instanceof Set) return component.values();
+  throw new Error("Invalid component");
+};
+
+const query = (...components) => {
+  const [first, ...rest] = components;
+  const result = [];
+
+  for (const e of getEntities(first)) {
+    let ok = true;
+
+    for (const c of rest) {
+      if (c instanceof Map && !c.has(e)) ok = false;
+      if (c instanceof Set && !c.has(e)) ok = false;
+    }
+
+    if (ok) result.push(e);
+  }
+
+  return result;
+};
+
+// =========================
+// CORE - DEBUG
+// =========================
 // Lil GUI - https://github.com/georgealways/lil-gui
 // const gui = new GUI();
 // gui.title("Debugger");
@@ -26,7 +57,6 @@ let delta = 0;
 // Tweakplane - https://github.com/cocopon/tweakpane
 const pane = new Pane({ title: "Debugger" });
 
-// Stats - https://github.com/mrdoob/stats.js
 const createStat = (panelType = 0, topPosition = "0px") => {
   const stat = new Stats();
 
@@ -53,125 +83,155 @@ const endStats = () => {
   statMB.end();
 };
 
-// RENDERER
-// -------------------------
+// =========================
+// CORE - THREE
+// =========================
 const canvas = document.querySelector("#webgl");
 const renderer = new THREE.WebGLRenderer({
-  canvas: canvas,
+  canvas,
   antialias: true,
   powerPreference: "high-performance",
 });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setClearColor(0x1a1a1a);
+const clearColor = new THREE.Color(0x1a1a1a);
 
-// SCENE(S)
-// -------------------------
 const scene = new THREE.Scene();
+scene.background = clearColor;
+scene.fog = new THREE.Fog(clearColor, 1, 30);
 
-// HELPER(S)
-// -------------------------
-const grid = new THREE.GridHelper(100, 75, 0xeeeeee, 0x666666);
-scene.add(grid);
+scene.add(new THREE.GridHelper(250, 100));
+scene.add(new THREE.AxesHelper(5));
 
-const axis = new THREE.AxesHelper(5.5);
-scene.add(axis);
-
-// OBJECT(S)
-// -------------------------
-const sphere = new THREE.Mesh(
-  new THREE.SphereGeometry(0.5, 32, 32),
-  new THREE.MeshStandardMaterial({ roughness: 0.7 })
-);
-
-sphere.position.y = sphere.geometry.parameters.radius;
-scene.add(sphere);
-
-// LIGHT(S)
-// -------------------------
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(ambientLight);
-
-// CAMERA(S)
-// -------------------------
 const camera = new THREE.PerspectiveCamera(
   75,
-  window.innerWidth / window.innerHeight,
+  innerWidth / innerHeight,
   0.1,
   100
 );
 
-camera.position.x = 4;
-camera.position.y = 2;
-camera.position.z = 5;
+camera.position.set(6, 6, 6);
+camera.lookAt(0, 0, 0);
+
 scene.add(camera);
 
-// CONTROL(S)
-// -------------------------
+window.addEventListener("resize", () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+scene.add(new THREE.DirectionalLight());
+
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = false;
 
-// HANDLER(S)
-// -------------------------
-window.addEventListener("resize", () => {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+// =========================
+// CORE - GAME STATE(S) (PAUSE)
+// =========================
+const GameState = {
+  paused: false,
+};
 
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
+const togglePause = () => {
+  GameState.paused = !GameState.paused;
+  document.body.classList.toggle("paused", GameState.paused);
+};
 
-  renderer.setSize(width, height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-});
+// =========================
+// CORE - RAW INPUT
+// =========================
+const rawInput = {
+  forward: false,
+  backward: false,
+  left: false,
+  right: false,
+  jump: false,
+};
 
-// KEYBOARD INPUT
-// -------------------------
 window.addEventListener("keydown", (e) => {
-  if (isPaused && e.key !== "Escape") return;
-
-  switch (e.key) {
-    case "Escape":
-      togglePause();
-      break;
-  }
-});
-
-// PAUSE
-// -------------------------
-function togglePause() {
-  isPaused = !isPaused;
-  document.body.classList.toggle("paused", isPaused);
-
-  if (!isPaused) {
-    lastTime = performance.now();
-    accumulator = 0;
-    inputState.jump = false;
-    inputState.src = null;
-  }
-}
-
-// RENDER LOOP
-// -------------------------
-function render(now) {
-  requestAnimationFrame(render);
-  beginStats();
-
-  if (isPaused) {
-    lastTime = now;
-    endStats();
+  if (e.key === "Escape") {
+    togglePause();
     return;
   }
 
-  // Delta Time Pattern
-  delta = Math.min((now - lastTime) / 1000, 0.1);
-  lastTime = now;
+  if (GameState.paused) return;
 
+  if (e.key === "w") rawInput.forward = true;
+  if (e.key === "s") rawInput.backward = true;
+  if (e.key === "a") rawInput.left = true;
+  if (e.key === "d") rawInput.right = true;
+  if (e.key === " ") rawInput.jump = true;
+});
+
+window.addEventListener("keyup", (e) => {
+  if (GameState.paused) return;
+
+  if (e.key === "w") rawInput.forward = false;
+  if (e.key === "s") rawInput.backward = false;
+  if (e.key === "a") rawInput.left = false;
+  if (e.key === "d") rawInput.right = false;
+});
+
+// =========================
+// ENTITY: PLAYER
+// =========================
+const player = createEntity();
+Components.Player.add(player);
+
+Components.Input.set(player, {
+  forward: false,
+  backward: false,
+  left: false,
+  right: false,
+  jump: false,
+});
+
+const mesh = new THREE.Mesh(
+  new THREE.SphereGeometry(0.5, 32, 32),
+  new THREE.MeshStandardMaterial({ roughness: 0.6 })
+);
+
+mesh.position.y = 0.5;
+scene.add(mesh);
+Components.Mesh.set(player, mesh);
+
+// =========================
+// SYSTEMS
+// =========================
+const InputSystem = () => {
+  if (GameState.paused) return;
+
+  for (const e of Components.Input.keys()) {
+    const input = Components.Input.get(e);
+    input.forward = rawInput.forward;
+    input.backward = rawInput.backward;
+    input.left = rawInput.left;
+    input.right = rawInput.right;
+    input.jump = rawInput.jump;
+  }
+
+  rawInput.jump = false;
+};
+
+const RenderSystem = () => {
   controls.update();
-
   renderer.render(scene, camera);
+};
+
+// =========================
+// RENDER LOOP
+// =========================
+const render = () => {
+  requestAnimationFrame(render);
+  beginStats();
+
+  InputSystem();
+  RenderSystem();
 
   endStats();
-}
+};
 
 requestAnimationFrame(render);

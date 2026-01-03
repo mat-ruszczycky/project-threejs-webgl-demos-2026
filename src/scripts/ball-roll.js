@@ -62,8 +62,8 @@ import("@dimforge/rapier3d").then((RAPIER) => {
     powerPreference: "high-performance",
   });
 
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.setClearColor(clearColor);
 
   // SCENE
@@ -95,7 +95,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   // -------------------------
   const camera = new THREE.PerspectiveCamera(
     75,
-    window.innerWidth / window.innerHeight,
+    innerWidth / innerHeight,
     0.1,
     100
   );
@@ -103,17 +103,17 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
   // RESIZE
   // -------------------------
-  window.addEventListener("resize", () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+  addEventListener("resize", () => {
+    camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   });
 
   // KEYBOARD INPUT
   // -------------------------
-  window.addEventListener("keydown", (e) => {
+  addEventListener("keydown", (e) => {
     if (isPaused && e.key !== "Escape") return;
 
     switch (e.key) {
@@ -139,7 +139,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
     }
   });
 
-  window.addEventListener("keyup", () => {
+  addEventListener("keyup", () => {
     inputState.forward = false;
     inputState.backward = false;
     inputState.left = false;

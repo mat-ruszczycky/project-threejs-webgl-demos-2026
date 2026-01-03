@@ -13,8 +13,7 @@ import { Pane } from "tweakpane";
 // -------------------------
 // CORE - ECS
 // -------------------------
-let nextEntityId = 0;
-const createEntity = () => nextEntityId++;
+const createEntity = () => self.crypto.randomUUID();
 
 const Components = {
   Mesh: new Map(),
@@ -51,7 +50,14 @@ const query = (...components) => {
 // CORE - DEBUG
 // -------------------------
 // Tweakplane - https://github.com/cocopon/tweakpane
+const PARAMS = {
+  paused: false,
+};
 const pane = new Pane({ title: "Debugger" });
+
+pane.addBinding(PARAMS, "paused", { label: "Paused" }).on("change", (ev) => {
+  togglePause();
+});
 
 const createStat = (panelID = "fps", styles = "top:0px;left:0;") => {
   const panelMap = { fps: 0, ms: 1, mb: 2 };
@@ -280,15 +286,16 @@ const RenderSystem = () => {
 // -------------------------
 const render = () => {
   requestAnimationFrame(render);
-  beginStats();
 
-  // Systems
+  if (GameState.paused) return;
+
+  beginStats();
   InputSystem();
   MovementSystem();
   PhysicsSystem();
   RenderSystem();
-
   endStats();
 };
 
 requestAnimationFrame(render);
+window.comps = Components;

@@ -57,19 +57,21 @@ const query = (...components) => {
 // Tweakplane - https://github.com/cocopon/tweakpane
 const pane = new Pane({ title: "Debugger" });
 
-const createStat = (panelType = 0, topPosition = "0px") => {
+const createStat = (panelID = "fps", styles = "top:0px;left:0;") => {
+  const panelMap = { fps: 0, ms: 1, mb: 2 };
+  const panelType = panelMap[panelID];
   const stat = new Stats();
 
   stat.showPanel(panelType);
-  stat.dom.style.cssText = `position:absolute;top:${topPosition};left:0;`;
+  stat.dom.style.cssText = `position:absolute;${styles}`;
   document.body.appendChild(stat.dom);
 
   return stat;
 };
 
-const statFPS = createStat(0, "0px");
-const statMS = createStat(1, "48px");
-const statMB = createStat(2, "96px");
+const statFPS = createStat("fps", "top:0px;left:0;");
+const statMS = createStat("ms", "top:48px;left:0;");
+const statMB = createStat("mb", "top:96px;left:0;");
 
 const beginStats = () => {
   statFPS.begin();

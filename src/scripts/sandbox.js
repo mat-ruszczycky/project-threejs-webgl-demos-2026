@@ -47,8 +47,30 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   const gui = new GUI();
   gui.title("Debugger").close();
 
-  const stats = new Stats();
-  document.body.appendChild(stats.dom);
+  const createStat = (type, pos = 0) => {
+    const stat = new Stats();
+    stat.showPanel(type);
+    stat.dom.style.cssText = `position:absolute;top:${pos}px;left:0;`;
+    document.body.appendChild(stat.dom);
+
+    return stat;
+  };
+
+  const statFPS = createStat(0, 0);
+  const statMS = createStat(1, 48);
+  const statMB = createStat(2, 96);
+
+  const beginStats = () => {
+    statFPS.begin();
+    statMS.begin();
+    statMB.begin();
+  };
+
+  const endStats = () => {
+    statFPS.end();
+    statMS.end();
+    statMB.end();
+  };
 
   // =========================
   // THREE
@@ -242,19 +264,19 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   };
 
   // =========================
-  // LOOP
+  // RENDER LOOP
   // =========================
-  const loop = () => {
-    requestAnimationFrame(loop);
-    stats.begin();
+  const render = () => {
+    requestAnimationFrame(render);
+    beginStats();
 
     InputSystem();
     MovementSystem();
     PhysicsSystem();
     RenderSystem();
 
-    stats.end();
+    endStats();
   };
 
-  loop();
+  requestAnimationFrame(render);
 });

@@ -5,7 +5,7 @@ import GUI from "lil-gui";
 
 import("@dimforge/rapier3d").then((RAPIER) => {
   // =========================
-  // ECS CORE
+  // CORE - ECS
   // =========================
   let nextEntityId = 0;
   const createEntity = () => nextEntityId++;
@@ -42,23 +42,24 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   };
 
   // =========================
-  // DEBUG
+  // CORE - DEBUG
   // =========================
   const gui = new GUI();
   gui.title("Debugger").close();
 
-  const createStat = (type, pos = 0) => {
+  const createStat = (panelType = 0, topPosition = "0px") => {
     const stat = new Stats();
-    stat.showPanel(type);
-    stat.dom.style.cssText = `position:absolute;top:${pos}px;left:0;`;
+
+    stat.showPanel(panelType);
+    stat.dom.style.cssText = `position:absolute;top:${topPosition};left:0;`;
     document.body.appendChild(stat.dom);
 
     return stat;
   };
 
-  const statFPS = createStat(0, 0);
-  const statMS = createStat(1, 48);
-  const statMB = createStat(2, 96);
+  const statFPS = createStat(0, "0px");
+  const statMS = createStat(1, "48px");
+  const statMB = createStat(2, "96px");
 
   const beginStats = () => {
     statFPS.begin();
@@ -73,7 +74,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   };
 
   // =========================
-  // THREE
+  // CORE - THREE
   // =========================
   const canvas = document.querySelector("#webgl");
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -108,7 +109,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   scene.add(new THREE.DirectionalLight());
 
   // =========================
-  // PHYSICS
+  // CORE - PHYSICS
   // =========================
   const world = new RAPIER.World({ x: 0, y: -30, z: 0 });
 
@@ -119,7 +120,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   );
 
   // =========================
-  // GAME STATE (PAUSE)
+  // CORE - GAME STATE(S) (PAUSE)
   // =========================
   const GameState = {
     paused: false,
@@ -131,7 +132,7 @@ import("@dimforge/rapier3d").then((RAPIER) => {
   };
 
   // =========================
-  // RAW INPUT
+  // CORE - RAW INPUT
   // =========================
   const rawInput = {
     forward: false,

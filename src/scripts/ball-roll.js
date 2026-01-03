@@ -31,6 +31,7 @@ const inputState = {
 
 // CORE - DEBUG
 // -------------------------
+
 // Tweakplane - https://github.com/cocopon/tweakpane
 const PARAMS = {
   paused: false,
@@ -38,9 +39,15 @@ const PARAMS = {
 
 const pane = new Pane({ title: "Debugger" });
 
-pane.addBinding(PARAMS, "paused", { label: "Paused" }).on("change", (e) => {
-  togglePause();
+const statesPane = pane.addFolder({
+  title: "States",
 });
+
+statesPane
+  .addBinding(PARAMS, "paused", { label: "Paused" })
+  .on("change", (e) => {
+    togglePause();
+  });
 
 const navPane = pane.addFolder({
   title: "Navigation",

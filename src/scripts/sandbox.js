@@ -171,10 +171,12 @@ import("@dimforge/rapier3d").then((RAPIER) => {
       .setLinearDamping(0.5)
       .setCanSleep(true)
   );
+
   world.createCollider(
     RAPIER.ColliderDesc.ball(0.5).setFriction(0.6).setRestitution(0.96),
     sphereBody
   );
+
   Components.Physics.set(sphereEntity, sphereBody);
 
   // =========================
@@ -215,11 +217,13 @@ import("@dimforge/rapier3d").then((RAPIER) => {
 
   const RenderSystem = () => {
     const pos = Components.Physics.get(sphereEntity).translation();
-    if (pos.y <= -10)
+
+    if (pos.y <= -10) {
       Components.Physics.get(sphereEntity).setTranslation(
         { x: 6, y: 10, z: 6 },
         true
       );
+    }
 
     const mesh = Components.Mesh.get(sphereEntity);
     mesh.position.set(pos.x, pos.y, pos.z);

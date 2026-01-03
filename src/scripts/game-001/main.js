@@ -1,16 +1,18 @@
 // STYLE(S)
 // -------------------------
-import "./../../styles/app.scss";
+import "./../styles/app.scss";
 
 // APP
 // -------------------------
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import Stats from "three/addons/libs/stats.module.js";
+import GUI from "lil-gui";
 import { Pane } from "tweakpane";
 
 // GLOBAL(S)
 // -------------------------
+let isPaused = false;
 let lastTime = performance.now();
 let delta = 0;
 
@@ -25,20 +27,31 @@ let delta = 0;
 const pane = new Pane({ title: "Debugger" });
 
 // Stats - https://github.com/mrdoob/stats.js
-const statsFPS = new Stats();
-statsFPS.showPanel(0);
-statsFPS.dom.style.cssText = "position:absolute;top:0px;left:0px;";
-document.body.appendChild(statsFPS.dom);
+const createStat = (panelType = 0, topPosition = "0px") => {
+  const stat = new Stats();
 
-const statsMS = new Stats();
-statsMS.showPanel(1);
-statsMS.dom.style.cssText = "position:absolute;top:48px;left:0;";
-document.body.appendChild(statsMS.dom);
+  stat.showPanel(panelType);
+  stat.dom.style.cssText = `position:absolute;top:${topPosition};left:0;`;
+  document.body.appendChild(stat.dom);
 
-const statsMB = new Stats();
-statsMB.showPanel(2);
-statsMB.dom.style.cssText = "position:absolute;top:96px;left:0;";
-document.body.appendChild(statsMB.dom);
+  return stat;
+};
+
+const statFPS = createStat(0, "0px");
+const statMS = createStat(1, "48px");
+const statMB = createStat(2, "96px");
+
+const beginStats = () => {
+  statFPS.begin();
+  statMS.begin();
+  statMB.begin();
+};
+
+const endStats = () => {
+  statFPS.end();
+  statMS.end();
+  statMB.end();
+};
 
 // RENDERER
 // -------------------------
@@ -112,12 +125,43 @@ window.addEventListener("resize", () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
+// KEYBOARD INPUT
+// -------------------------
+window.addEventListener("keydown", (e) => {
+  if (isPaused && e.key !== "Escape") return;
+
+  switch (e.key) {
+    case "Escape":
+      togglePause();
+      break;
+  }
+});
+
+// PAUSE
+// -------------------------
+function togglePause() {
+  isPaused = !isPaused;
+  document.body.classList.toggle("paused", isPaused);
+
+  if (!isPaused) {
+    lastTime = performance.now();
+    accumulator = 0;
+    inputState.jump = false;
+    inputState.src = null;
+  }
+}
+
 // RENDER LOOP
 // -------------------------
 function render(now) {
-  statsFPS.begin();
-  statsMB.begin();
-  statsMS.begin();
+  requestAnimationFrame(render);
+  beginStats();
+
+  if (isPaused) {
+    lastTime = now;
+    endStats();
+    return;
+  }
 
   // Delta Time Pattern
   delta = Math.min((now - lastTime) / 1000, 0.1);
@@ -127,11 +171,7 @@ function render(now) {
 
   renderer.render(scene, camera);
 
-  statsFPS.end();
-  statsMB.end();
-  statsMS.end();
-
-  requestAnimationFrame(render);
+  endStats();
 }
 
 requestAnimationFrame(render);

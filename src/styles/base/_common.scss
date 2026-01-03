@@ -33,5 +33,26 @@ html {
     overflow-y: hidden;
     width: 100vw;
     height: 100vh;
+
+    &.paused {
+      background-color: rgba(0 0 0 / 0.9);
+      pointer-events: none;
+
+      &::after {
+        z-index: 9999;
+        font-size: 45px;
+        color: white;
+        content: "Paused";
+        position: absolute;
+        top: 50%;
+        text-align: center;
+        width: 100%;
+        left: 0;
+        display: block;
+      }
+      canvas {
+        opacity: 0.1;
+      }
+    }
   }
 }

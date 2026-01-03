@@ -1,11 +1,13 @@
 // -------------------------
 // STYLE(S)
 // -------------------------
+
 import "./../../styles/app.scss";
 
 // -------------------------
 // LIB(S)
 // -------------------------
+
 import * as THREE from "three";
 import Stats from "three/addons/libs/stats.module.js";
 import { Pane } from "tweakpane";
@@ -42,10 +44,10 @@ const destroyEntity = (entity) => {
 
 // Central registry for all component storage.
 const Components = Object.freeze({
-  Mesh: new Map(), // Map<Entity, MeshData>
-  Physics: new Map(), // Map<Entity, PhysicsData>
-  Input: new Map(), // Map<Entity, InputData>
-  Player: new Set(), // Set<Entity>
+  Mesh: new Map(),
+  Physics: new Map(),
+  Input: new Map(),
+  Player: new Set(),
 });
 
 // -----------------------------
@@ -118,6 +120,7 @@ const query = (...components) => {
 // -------------------------
 // CORE - DEBUG (Tweakplane - https://github.com/cocopon/tweakpane)
 // -------------------------
+
 const PARAMS = {
   paused: false,
 };
@@ -159,6 +162,7 @@ const endStats = () => {
 // -------------------------
 // CORE - THREE
 // -------------------------
+
 const canvas = document.querySelector("#webgl");
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -199,6 +203,7 @@ scene.add(new THREE.DirectionalLight());
 // -------------------------
 // CORE - PHYSICS
 // -------------------------
+
 const Rapier = await import("@dimforge/rapier3d");
 const world = new Rapier.World({ x: 0, y: -(9.81 * 2), z: 0 });
 
@@ -209,6 +214,7 @@ world.createCollider(
 // -------------------------
 // CORE - GAME STATE(S) (PAUSE)
 // -------------------------
+
 const GameState = {
   paused: false,
 };
@@ -221,6 +227,7 @@ const togglePause = () => {
 // -------------------------
 // CORE - RAW INPUT
 // -------------------------
+
 const rawInput = {
   forward: false,
   backward: false,
@@ -256,6 +263,7 @@ window.addEventListener("keyup", (e) => {
 // -------------------------
 // ENTITY: PLAYER
 // -------------------------
+
 const player = createEntity();
 Components.Player.add(player);
 
@@ -290,6 +298,7 @@ Components.Physics.set(player, body);
 // -------------------------
 // SYSTEMS
 // -------------------------
+
 const InputSystem = () => {
   if (GameState.paused) return;
 
@@ -354,6 +363,7 @@ const RenderSystem = () => {
 // -------------------------
 // RENDER LOOP
 // -------------------------
+
 const render = () => {
   requestAnimationFrame(render);
 

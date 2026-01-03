@@ -127,9 +127,21 @@ const PARAMS = {
 
 const pane = new Pane({ title: "Debugger" });
 
-pane.addBinding(PARAMS, "paused", { label: "Paused" }).on("change", (ev) => {
+pane.addBinding(PARAMS, "paused", { label: "Paused" }).on("change", (e) => {
   togglePause();
 });
+
+const navPane = pane.addFolder({
+  title: "Navigation",
+});
+
+navPane
+  .addButton({
+    title: "Home",
+  })
+  .on("click", (e) => {
+    window.location.href = "../";
+  });
 
 const createStat = (panelID = "fps", styles = "top:0px;left:0;") => {
   const panelMap = { fps: 0, ms: 1, mb: 2 };

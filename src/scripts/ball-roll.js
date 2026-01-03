@@ -32,7 +32,27 @@ const inputState = {
 // CORE - DEBUG
 // -------------------------
 // Tweakplane - https://github.com/cocopon/tweakpane
+const PARAMS = {
+  paused: false,
+};
+
 const pane = new Pane({ title: "Debugger" });
+
+pane.addBinding(PARAMS, "paused", { label: "Paused" }).on("change", (e) => {
+  togglePause();
+});
+
+const navPane = pane.addFolder({
+  title: "Navigation",
+});
+
+navPane
+  .addButton({
+    title: "Home",
+  })
+  .on("click", (e) => {
+    window.location.href = "../";
+  });
 
 const statsFPS = new Stats();
 statsFPS.showPanel(0);

@@ -23,41 +23,6 @@ const togglePause = () => {
   document.body.classList.toggle("paused", GameState.paused);
 };
 
-// =========================
-// CORE - RAW INPUT
-// =========================
-const rawInput = {
-  forward: false,
-  backward: false,
-  left: false,
-  right: false,
-  jump: false,
-};
-
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    togglePause();
-    return;
-  }
-
-  if (GameState.paused) return;
-
-  if (e.key === "w") rawInput.forward = true;
-  if (e.key === "s") rawInput.backward = true;
-  if (e.key === "a") rawInput.left = true;
-  if (e.key === "d") rawInput.right = true;
-  if (e.key === " ") rawInput.jump = true;
-});
-
-window.addEventListener("keyup", (e) => {
-  if (GameState.paused) return;
-
-  if (e.key === "w") rawInput.forward = false;
-  if (e.key === "s") rawInput.backward = false;
-  if (e.key === "a") rawInput.left = false;
-  if (e.key === "d") rawInput.right = false;
-});
-
 // -------------------------
 // DEBUGGER
 // -------------------------
@@ -158,13 +123,6 @@ function initWorld() {
   // Controls
   const controls = new OrbitControls(camera, canvas);
 
-  // Responsive
-  window.addEventListener("resize", () => {
-    camera.aspect = innerWidth / innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight);
-  });
-
   return { renderer, scene, camera, controls };
 }
 
@@ -177,6 +135,47 @@ const World = initWorld();
 // -------------------------
 // PHYSICS
 // -------------------------
+
+// -------------------------
+// INPUT
+// -------------------------
+const rawInput = {
+  forward: false,
+  backward: false,
+  left: false,
+  right: false,
+  jump: false,
+};
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    togglePause();
+    return;
+  }
+
+  if (GameState.paused) return;
+
+  if (e.key === "w") rawInput.forward = true;
+  if (e.key === "s") rawInput.backward = true;
+  if (e.key === "a") rawInput.left = true;
+  if (e.key === "d") rawInput.right = true;
+  if (e.key === " ") rawInput.jump = true;
+});
+
+window.addEventListener("keyup", (e) => {
+  if (GameState.paused) return;
+
+  if (e.key === "w") rawInput.forward = false;
+  if (e.key === "s") rawInput.backward = false;
+  if (e.key === "a") rawInput.left = false;
+  if (e.key === "d") rawInput.right = false;
+});
+
+window.addEventListener("resize", () => {
+  World.camera.aspect = innerWidth / innerHeight;
+  World.camera.updateProjectionMatrix();
+  World.renderer.setSize(innerWidth, innerHeight);
+});
 
 // -------------------------
 // MAIN LOOP

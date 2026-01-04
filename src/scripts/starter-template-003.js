@@ -191,13 +191,17 @@ function animate() {
 // -------------------------
 // INIT
 // -------------------------
-World.renderer = createRenderer();
-World.scene = createScene();
-World.camera = createCamera();
-World.controls = createControls(World.camera, World.renderer);
-World.debug = createDebugger(World);
+function App() {
+  World.renderer = createRenderer();
+  World.scene = createScene();
+  World.camera = createCamera();
+  World.controls = createControls(World.camera, World.renderer);
+  World.debug = createDebugger(World);
 
-bindInput(World);
-bindResize(World.camera, World.renderer);
+  bindInput(World);
+  bindResize(World.camera, World.renderer);
 
-requestAnimationFrame(animate);
+  requestAnimationFrame(animate);
+}
+
+App();

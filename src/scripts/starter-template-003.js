@@ -189,7 +189,7 @@ function animate() {
 // -------------------------
 
 // -------------------------
-// INIT
+// MAIN
 // -------------------------
 function App() {
   World.renderer = createRenderer();
@@ -204,4 +204,7 @@ function App() {
   requestAnimationFrame(animate);
 }
 
+// -------------------------
+// INIT
+// -------------------------
 App();

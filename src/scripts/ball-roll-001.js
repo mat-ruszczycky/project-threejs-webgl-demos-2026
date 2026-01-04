@@ -229,8 +229,8 @@ function togglePause() {
 
 // RENDER LOOP
 // -------------------------
-function render(now) {
-  requestAnimationFrame(render);
+function animate(now) {
+  requestAnimationFrame(animate);
 
   statsFPS.begin();
   statsMS.begin();
@@ -298,4 +298,4 @@ function render(now) {
 // START
 // -------------------------
 lastTime = performance.now();
-requestAnimationFrame(render);
+requestAnimationFrame(animate);

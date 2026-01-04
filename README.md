@@ -62,3 +62,113 @@ This is how much RAM the page/app is using.
 |     1 | Left stick Y (-1 up → +1 down)    |
 |     2 | Right stick X                     |
 |     3 | Right stick Y                     |
+
+## Time Management in Three.js
+
+- Use `THREE.Clock` for most Three.js projects
+- Use `requestAnimationFrame(time)` when you need engine-level control
+
+---
+
+### [THREE.Clock](https://threejs.org/docs/?q=Clock#Clock)
+
+```js
+const clock = new THREE.Clock();
+const delta = clock.getDelta(); // seconds since last frame
+```
+
+**Why**
+
+- Three.js–idiomatic and officially supported
+- Returns time in seconds (no manual conversion)
+- Integrates directly with `AnimationMixer`
+- Handles pausing and first-frame timing safely
+
+**Best for**
+
+- Typical Three.js scenes
+- Animation-driven applications
+- Simpler and less error-prone timing
+
+---
+
+### requestAnimationFrame(time)
+
+```js
+let lastTime = 0;
+
+function animate(time) {
+  const delta = (time - lastTime) / 1000;
+  lastTime = time;
+}
+```
+
+**Why**
+
+- Full control over time calculation
+- Industry standard pattern in game engines
+- Required for fixed timesteps, physics, and networking
+
+**Best for**
+
+- Custom engine layers
+- ECS or physics-driven updates
+- Deterministic simulations
+
+---
+
+### Fixed Timestep (Advanced)
+
+```js
+const FIXED_STEP = 1 / 60;
+let accumulator = 0;
+let lastTime = 0;
+
+function animate(time) {
+  requestAnimationFrame(animate);
+
+  accumulator += (time - lastTime) / 1000;
+  lastTime = time;
+
+  while (accumulator >= FIXED_STEP) {
+    update(FIXED_STEP);
+    accumulator -= FIXED_STEP;
+  }
+
+  render();
+}
+```
+
+**Why**
+
+- Keeps simulation consistent regardless of frame rate
+- Prevents physics instability at low or variable FPS
+- Enables deterministic behavior (important for multiplayer and replays)
+
+**Use when**
+
+- Physics accuracy matters
+- Frame rate is unpredictable
+- Deterministic updates are required
+
+### Summary (mental model)
+
+- **Rendering:** variable frame rate is fine
+- **Simulation / physics:** fixed timestep is preferred
+- **Most Three.js apps:** `THREE.Clock` is the right default
+
+If you want, I can also:
+
+- Add a **decision table**
+- Show **Clock + fixed timestep hybrid**
+- Tailor this for **games vs product viewers vs simulations**
+
+## ECS
+
+- **Entities** = IDs
+- **Components** = data only
+- **Systems** = logic that operates on entities with certain components
+
+### Why:
+
+It kills god-objects, scales cleanly, is faster, easier to refactor, and makes features like AI, multiplayer, and replays manageable instead of painful. **ECS keeps complexity under control as projects grow.**

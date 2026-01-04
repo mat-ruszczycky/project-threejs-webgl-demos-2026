@@ -10,7 +10,7 @@
   .project-item {
     display: flex;
     align-items: center;
-    flex-direction: row;
+    flex-direction: row-reverse;
     justify-content: space-between;
     flex: 1;
     gap: 120px;
@@ -21,13 +21,14 @@
       margin-top: 0;
     }
 
-    .project-type {
-      opacity: 0.5;
-      margin-left: 45px;
-    }
-
     .project-date {
       margin: 0;
+
+      .project-type {
+        opacity: 0.5;
+        margin-left: 45px;
+        transition: opacity 150ms linear;
+      }
     }
 
     .project-link {
@@ -44,6 +45,13 @@
         border-color: rgba(255 255 255 / 0.7);
         div {
           opacity: 0.75;
+        }
+
+        & + .project-date {
+          .project-type {
+            opacity: 1;
+            color: #fff;
+          }
         }
       }
     }

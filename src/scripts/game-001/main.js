@@ -16,12 +16,8 @@ import { Pane } from "tweakpane";
 // -------------------------
 const GameState = {
   paused: false,
-  setPaused(value) {
-    this.paused = value;
-    document.body.classList.toggle("paused", value);
-  },
   togglePause() {
-    this.setPaused(!this.paused);
+    document.body.classList.toggle("paused", this.paused);
   },
 };
 

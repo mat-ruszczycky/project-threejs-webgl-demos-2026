@@ -29,7 +29,7 @@ const World = {
 
   time: {
     last: 0,
-    elapsed: 0,
+    delta: 0,
   },
 };
 
@@ -175,7 +175,7 @@ function animate(time) {
 
   World.debug.begin();
 
-  World.time.elapsed = (time - World.time.last) / 1000;
+  World.time.delta = (time - World.time.last) / 1000;
   World.time.last = time;
 
   if (!World.state.paused) {

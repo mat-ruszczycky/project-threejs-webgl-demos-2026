@@ -13,3 +13,26 @@
 @use "components/header";
 @use "components/webgl";
 @use "components/footer";
+
+#projects {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  .project-item {
+    display: flex;
+    align-items: baseline;
+    flex-direction: row;
+    gap: 130px;
+
+    .project-type {
+      font-size: 14px;
+      opacity: 0.5;
+    }
+
+    .project-link {
+      border: 0;
+      font-size: 22px;
+    }
+  }
+}

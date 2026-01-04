@@ -114,12 +114,6 @@ function initWorld() {
   camera.lookAt(0, 0, 0);
   scene.add(camera);
 
-  // Lights
-  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-  directionalLight.position.set(5, 10, 7.5);
-  scene.add(directionalLight);
-
   // Controls
   const controls = new OrbitControls(camera, canvas);
 
@@ -131,6 +125,21 @@ const World = initWorld();
 // -------------------------
 // OBJECTS
 // -------------------------
+const sphere = new THREE.Mesh(
+  new THREE.SphereGeometry(0.5, 32, 32),
+  new THREE.MeshStandardMaterial({ roughness: 0.7 })
+);
+
+sphere.position.y = sphere.geometry.parameters.radius;
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+directionalLight.position.set(5, 10, 7.5);
+
+World.scene.add(
+  sphere,
+  directionalLight,
+  new THREE.AmbientLight(0xffffff, 0.5)
+);
 
 // -------------------------
 // PHYSICS
@@ -139,7 +148,7 @@ const World = initWorld();
 // -------------------------
 // INPUT
 // -------------------------
-const rawInput = {
+const RawInput = {
   forward: false,
   backward: false,
   left: false,
@@ -155,20 +164,20 @@ window.addEventListener("keydown", (e) => {
 
   if (GameState.paused) return;
 
-  if (e.key === "w") rawInput.forward = true;
-  if (e.key === "s") rawInput.backward = true;
-  if (e.key === "a") rawInput.left = true;
-  if (e.key === "d") rawInput.right = true;
-  if (e.key === " ") rawInput.jump = true;
+  if (e.key === "w") RawInput.forward = true;
+  if (e.key === "s") RawInput.backward = true;
+  if (e.key === "a") RawInput.left = true;
+  if (e.key === "d") RawInput.right = true;
+  if (e.key === " ") RawInput.jump = true;
 });
 
 window.addEventListener("keyup", (e) => {
   if (GameState.paused) return;
 
-  if (e.key === "w") rawInput.forward = false;
-  if (e.key === "s") rawInput.backward = false;
-  if (e.key === "a") rawInput.left = false;
-  if (e.key === "d") rawInput.right = false;
+  if (e.key === "w") RawInput.forward = false;
+  if (e.key === "s") RawInput.backward = false;
+  if (e.key === "a") RawInput.left = false;
+  if (e.key === "d") RawInput.right = false;
 });
 
 window.addEventListener("resize", () => {

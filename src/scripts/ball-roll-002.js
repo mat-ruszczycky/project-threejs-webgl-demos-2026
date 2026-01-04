@@ -28,7 +28,7 @@ const World = {
   },
 
   time: {
-    last: 0,
+    clock: new THREE.Clock(),
     delta: 0,
   },
 };
@@ -170,13 +170,11 @@ function draw(world) {
   world.renderer.render(world.scene, world.camera);
 }
 
-function animate(time) {
+function animate() {
   requestAnimationFrame(animate);
 
   World.debug.begin();
-
-  World.time.delta = (time - World.time.last) / 1000;
-  World.time.last = time;
+  World.time.delta = World.time.clock.getDelta();
 
   if (!World.state.paused) {
     update(World);

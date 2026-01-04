@@ -16,10 +16,47 @@ import { Pane } from "tweakpane";
 // -------------------------
 const GameState = {
   paused: false,
-  togglePause() {
-    document.body.classList.toggle("paused", this.paused);
-  },
 };
+
+const togglePause = () => {
+  GameState.paused = !GameState.paused;
+  document.body.classList.toggle("paused", GameState.paused);
+};
+
+// =========================
+// CORE - RAW INPUT
+// =========================
+const rawInput = {
+  forward: false,
+  backward: false,
+  left: false,
+  right: false,
+  jump: false,
+};
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    togglePause();
+    return;
+  }
+
+  if (GameState.paused) return;
+
+  if (e.key === "w") rawInput.forward = true;
+  if (e.key === "s") rawInput.backward = true;
+  if (e.key === "a") rawInput.left = true;
+  if (e.key === "d") rawInput.right = true;
+  if (e.key === " ") rawInput.jump = true;
+});
+
+window.addEventListener("keyup", (e) => {
+  if (GameState.paused) return;
+
+  if (e.key === "w") rawInput.forward = false;
+  if (e.key === "s") rawInput.backward = false;
+  if (e.key === "a") rawInput.left = false;
+  if (e.key === "d") rawInput.right = false;
+});
 
 // -------------------------
 // DEBUGGER
@@ -31,13 +68,25 @@ function initDebugger() {
   // States folder
   const statesPane = pane.addFolder({ title: "States" });
   statesPane
-    .addBinding(GameState, "paused", { label: "Paused" })
-    .on("change", () => GameState.togglePause());
+    .addBinding(
+      {
+        paused: false,
+      },
+      "paused",
+      { label: "Paused" }
+    )
+    .on("change", () => {
+      togglePause();
+    });
 
   // Navigation folder
   const navPane = pane.addFolder({ title: "Navigation" });
   navPane.addButton({ title: "Home" }).on("click", () => {
     window.location.href = "../";
+  });
+
+  navPane.addButton({ title: "3JS Docs" }).on("click", () => {
+    window.open("https://threejs.org/docs/", "_blank");
   });
 
   // Stats

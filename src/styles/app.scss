@@ -23,16 +23,34 @@
     display: flex;
     align-items: baseline;
     flex-direction: row;
-    gap: 130px;
+    justify-content: space-between;
+    flex: 1;
+    gap: 150px;
+    font-size: 14px;
 
     .project-type {
       font-size: 14px;
       opacity: 0.5;
+      flex-grow: 1;
     }
 
     .project-link {
+      flex-shrink: 1;
       border: 0;
       font-size: 22px;
+      transition: border-color 150ms linear;
+      border-bottom: 1px solid rgba(255 255 255 / 0);
+
+      div {
+        transition: opacity 150ms linear;
+      }
+
+      &:hover {
+        border-color: rgba(255 255 255 / 0.7);
+        div {
+          opacity: 0.75;
+        }
+      }
     }
   }
 }

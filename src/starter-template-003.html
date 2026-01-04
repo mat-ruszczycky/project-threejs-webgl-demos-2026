@@ -12,7 +12,7 @@
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
     <link rel="canonical" href="https://site-name.com/" />
-    <title>Project: Name Goes Here</title>
+    <title>Physics: Ball Rolling/Jump/ENV (WASD, Space)</title>
     <meta
       name="description"
       content="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
@@ -34,37 +34,25 @@
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
+    <header id="header">
+      <ul>
+        <li>
+          Frames rendered in the last second (The higher the number the better)
+        </li>
+        <li>
+          Milliseconds needed to render a frame (The lower the number the
+          better)
+        </li>
+        <li>
+          MBytes of allocated memory (Run Chrome with
+          --enable-precise-memory-info)
+        </li>
+      </ul>
+    </header>
     <main>
-      <header id="header">
-        <h1 id="prime-heading">ThreeJS Sandbox 2026</h1>
-      </header>
-
-      <nav id="projects">
-        <div class="project-item">
-          <p class="project-date">01/07/2026</p>
-          <p class="project-type">Starter Template</p>
-          <a class="project-link" href="./starter-template-003.html">
-            <div>Physics Character Controller</div>
-          </a>
-        </div>
-
-        <div class="project-item">
-          <p class="project-date">01/01/2025</p>
-          <p class="project-type">Starter Template</p>
-          <a class="project-link" href="./starter-template-002.html">
-            <div>Ball Roll 002</div>
-          </a>
-        </div>
-
-        <div class="project-item">
-          <p class="project-date">12/29/2025</p>
-          <p class="project-type">Physics Test</p>
-          <a class="project-link" href="./physics-test-001.html">
-            <div>Ball Roll 001</div>
-          </a>
-        </div>
-      </nav>
+      <canvas id="webgl"></canvas>
     </main>
-    <script defer type="module" src="./scripts/main.js"></script>
+    <footer id="footer"></footer>
+    <script defer type="module" src="./scripts/ball-roll-002.js"></script>
   </body>
 </html>

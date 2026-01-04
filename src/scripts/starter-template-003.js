@@ -1,3 +1,23 @@
+/**
+  1. Styles
+  2. Libraries
+  3. World (Global State)
+  4. Three.js Core
+     - Renderer
+     - Scene
+     - Camera
+     - Controls
+  5. Physics (Rapier)
+     - World Init
+     - Character Controller
+  6. Input
+  7. Debug / Dev Tools
+  8. Binding/Handlers
+     - Resize
+  9. Main Loop
+ 10. App Bootstrap
+ */
+
 // -------------------------
 // STYLES
 // -------------------------
@@ -113,7 +133,7 @@ async function initPhysics(scene) {
       const speed = 2.5 * delta;
       const dir = new physics.RAPIER.Vector3(
         (World.input.right - World.input.left) * speed,
-        0,
+        World.input.jump * speed,
         (World.input.backward - World.input.forward) * speed
       );
 
@@ -192,7 +212,7 @@ function initDebugger(world) {
 }
 
 // -------------------------
-// PLATFORM (RESIZE)
+// BINDING/HANDLERS
 // -------------------------
 function bindResize(camera, renderer) {
   window.addEventListener("resize", () => {
@@ -222,7 +242,7 @@ function animate() {
 }
 
 // -------------------------
-// APP / INIT
+// APP
 // -------------------------
 async function App() {
   World.renderer = initRenderer();

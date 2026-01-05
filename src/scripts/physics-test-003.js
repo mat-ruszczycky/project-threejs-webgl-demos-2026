@@ -46,28 +46,9 @@ import { bindResize } from "./core/events";
 import initDebugger from "./core/debug";
 
 // -------------------------
-// MAIN LOOP
+// APP
 // -------------------------
-function animate() {
-  requestAnimationFrame(animate);
-
-  World.debug.begin();
-  World.time.delta = World.time.clock.getDelta();
-
-  if (!World.state.paused) {
-    updateBallControls(World);
-    stepPhysics(World);
-    postPhysicsUpdate(World);
-    World.renderer.render(World.scene, World.camera);
-  }
-
-  World.debug.end();
-}
-
-// -------------------------
-// APP BOOTSTRAP
-// -------------------------
-async function App() {
+const App = async () => {
   World.renderer = initRenderer();
   World.scene = initScene();
   World.camera = initCamera();
@@ -94,6 +75,22 @@ async function App() {
   bindResize(World.camera, World.renderer);
 
   animate();
-}
+};
+
+const animate = () => {
+  requestAnimationFrame(animate);
+
+  World.debug.begin();
+  World.time.delta = World.time.clock.getDelta();
+
+  if (!World.state.paused) {
+    updateBallControls(World);
+    stepPhysics(World);
+    postPhysicsUpdate(World);
+    World.renderer.render(World.scene, World.camera);
+  }
+
+  World.debug.end();
+};
 
 App();

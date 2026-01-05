@@ -30,7 +30,7 @@ export function createBall(RAPIER, world, radius, startY = 6) {
   const body = world.createRigidBody(
     RAPIER.RigidBodyDesc.dynamic()
       .setTranslation(0, startY, 0)
-      .setGravityScale(5, true)
+      .setGravityScale(8, true)
       .setLinearDamping(0.5)
       .setCanSleep(true)
   );
@@ -56,7 +56,7 @@ export function updateBallControls(world) {
   if (world.input.right) dir.x += force;
 
   if (world.input.jump) {
-    dir.y += 5;
+    dir.y += 8;
     world.input.jump = false;
   }
 
@@ -78,18 +78,17 @@ export function postPhysicsUpdate(world) {
     return;
   }
 
-  mesh.position.set(pos.x, pos.y, pos.z);
-
   // Update OrbitControls target smoothly to the ball
   const ballPos = new THREE.Vector3(pos.x, pos.y, pos.z);
-  world.controls.target.lerp(ballPos, 0.05);
+  const p = world.controls.target.lerp(ballPos, 0.1);
+  mesh.position.set(p.x, ballPos.y, p.z);
 
   // Smooth follow: move camera relative to its current offset from target
   const offset = new THREE.Vector3();
   offset.subVectors(world.camera.position, world.controls.target); // current offset from target
 
   const desiredPos = ballPos.clone().add(offset); // maintain offset relative to ball
-  world.camera.position.lerp(desiredPos, 0.05); // smooth follow
+  world.camera.position.lerp(desiredPos, 0.1); // smooth follow
 
   world.controls.update();
 }

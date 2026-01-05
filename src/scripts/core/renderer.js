@@ -3,7 +3,7 @@ import * as THREE from "three";
 export function initRenderer() {
   const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector("#webgl"),
-    antialias: false,
+    antialias: true,
     powerPreference: "high-performance",
   });
 

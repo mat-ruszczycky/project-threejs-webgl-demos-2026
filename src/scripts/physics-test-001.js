@@ -11,7 +11,7 @@ import { Pane } from "tweakpane";
 // GLOBAL(S)
 // -------------------------
 let isPaused = false;
-let lastTime = performance.now();
+let clock = new THREE.Clock();
 let delta = 0;
 let accumulator = 0;
 
@@ -249,8 +249,7 @@ function animate(now) {
     return;
   }
 
-  delta = Math.min((now - lastTime) / 1000, 0.1);
-  lastTime = now;
+  const delta = clock.getDelta();
 
   updateGamepadInput();
 
@@ -302,5 +301,4 @@ function animate(now) {
 
 // START
 // -------------------------
-lastTime = performance.now();
 requestAnimationFrame(animate);

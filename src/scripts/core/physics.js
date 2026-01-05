@@ -1,9 +1,14 @@
 import * as THREE from "three";
 
 export async function initPhysics() {
-  const RAPIER = await import("@dimforge/rapier3d");
-  const world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
-  return { RAPIER, world };
+  try {
+    const RAPIER = await import("@dimforge/rapier3d");
+    const world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
+    return { RAPIER, world };
+  } catch (error) {
+    console.error("Physics init failed:", error);
+    return null;
+  }
 }
 
 export function stepPhysics(world) {

@@ -1,5 +1,4 @@
 import "../styles/app.scss";
-import * as THREE from "three";
 import World from "./core/world";
 import { initRenderer, initScene, initCamera } from "./core/renderer";
 import { initLights, createBallMesh } from "./core/objects";

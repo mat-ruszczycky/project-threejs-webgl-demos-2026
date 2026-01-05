@@ -1,3 +1,5 @@
+import * as THREE from "three";
+
 export async function initPhysics() {
   const RAPIER = await import("@dimforge/rapier3d");
 
@@ -63,11 +65,9 @@ export function stepPhysics(world) {
     steps++;
   }
 }
-
 export function postPhysicsUpdate(world) {
   const body = world.physics.ball;
   const mesh = world.objects.ball;
-  const cam = world.camera;
 
   const pos = body.translation();
 
@@ -78,6 +78,17 @@ export function postPhysicsUpdate(world) {
   }
 
   mesh.position.set(pos.x, pos.y, pos.z);
-  cam.position.set(pos.x + 6, 6, pos.z + 6);
-  cam.lookAt(pos.x, pos.y, pos.z);
+
+  // Update OrbitControls target smoothly to the ball
+  const ballPos = new THREE.Vector3(pos.x, pos.y, pos.z);
+  world.controls.target.lerp(ballPos, 0.05);
+
+  // Smooth follow: move camera relative to its current offset from target
+  const offset = new THREE.Vector3();
+  offset.subVectors(world.camera.position, world.controls.target); // current offset from target
+
+  const desiredPos = ballPos.clone().add(offset); // maintain offset relative to ball
+  world.camera.position.lerp(desiredPos, 0.05); // smooth follow
+
+  world.controls.update();
 }

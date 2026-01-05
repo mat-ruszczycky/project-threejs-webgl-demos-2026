@@ -8,7 +8,7 @@ export function initRenderer() {
   });
 
   renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(0.25);
+  renderer.setPixelRatio(1);
   return renderer;
 }
 
@@ -31,5 +31,7 @@ export function initCamera() {
     0.1,
     100
   );
+
+  camera.position.set(6, 6, 6);
   return camera;
 }

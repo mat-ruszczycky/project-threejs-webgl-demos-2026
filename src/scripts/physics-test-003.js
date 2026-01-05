@@ -1,26 +1,9 @@
-// -------------------------
-// STYLES
-// -------------------------
 import "../styles/app.scss";
-
-// -------------------------
-// WORLD (GLOBAL STATE)
-// -------------------------
+import * as THREE from "three";
 import World from "./core/world";
-
-// -------------------------
-// RENDERER
-// -------------------------
 import { initRenderer, initScene, initCamera } from "./core/renderer";
-
-// -------------------------
-// OBJECTS
-// -------------------------
 import { initLights, createBallMesh } from "./core/objects";
-
-// -------------------------
-// PHYSICS (RAPIER)
-// -------------------------
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import {
   initPhysics,
   createGround,
@@ -29,29 +12,32 @@ import {
   stepPhysics,
   postPhysicsUpdate,
 } from "./core/physics";
-
-// -------------------------
-// INPUT
-// -------------------------
 import bindInput from "./core/input";
-
-// -------------------------
-// EVENTS
-// -------------------------
 import { bindResize } from "./core/events";
-
-// -------------------------
-// DEBUG
-// -------------------------
 import initDebugger from "./core/debug";
 
-// -------------------------
+function initControls(camera, renderer) {
+  const controls = new OrbitControls(camera, renderer.domElement);
+
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.1;
+
+  // Limit vertical rotation so it doesn't go underground
+  controls.maxPolarAngle = Math.PI / 2 - 0.1;
+  controls.minPolarAngle = 0.1;
+
+  controls.enableZoom = true;
+  controls.enablePan = false;
+
+  return controls;
+}
+
 // APP
-// -------------------------
 const App = async () => {
   World.renderer = initRenderer();
   World.scene = initScene();
   World.camera = initCamera();
+  World.controls = initControls(World.camera, World.renderer);
   World.debug = initDebugger(World);
 
   initLights(World.scene);
@@ -87,6 +73,7 @@ const animate = () => {
     updateBallControls(World);
     stepPhysics(World);
     postPhysicsUpdate(World);
+
     World.renderer.render(World.scene, World.camera);
   }
 

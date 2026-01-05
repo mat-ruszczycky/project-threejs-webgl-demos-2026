@@ -20,6 +20,10 @@ export default defineConfig({
     sourcemap: true,
     cssCodeSplit: true,
     rollupOptions: {
+      input: {
+        main: path.resolve(dirname, "src/index.html"),
+        test: path.resolve(dirname, "src/physics-test-002.html"),
+      },
       output: {
         manualChunks: undefined,
       },

@@ -61,6 +61,19 @@ navPane
     window.location.href = "../";
   });
 
+navPane
+  .addButton({ title: "ThreeJS Docs" })
+  .on("click", () => window.open("https://threejs.org/docs/", "_blank"));
+
+navPane
+  .addButton({ title: "RAPIER Docs" })
+  .on("click", () =>
+    window.open(
+      "https://rapier.rs/docs/user_guides/javascript/getting_started_js",
+      "_blank"
+    )
+  );
+
 const statsFPS = new Stats();
 statsFPS.showPanel(0);
 statsFPS.dom.style.cssText = "position:absolute;top:0;left:0;";

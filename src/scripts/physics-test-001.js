@@ -191,7 +191,7 @@ const updateGamepadInput = () => {
 // PHYSICS (Rapier)
 // -------------------------
 const Rapier = await import("@dimforge/rapier3d");
-const world = new Rapier.World({ x: 0, y: -30, z: 0 });
+const world = new Rapier.World({ x: 0, y: -9.81, z: 0 });
 const eventQueue = new Rapier.EventQueue(true);
 world.timestep = FIXED_TIMESTEP;
 
@@ -205,6 +205,7 @@ world.createCollider(
 // Sphere
 const rigidBody = world.createRigidBody(
   Rapier.RigidBodyDesc.dynamic()
+    .setGravityScale(5, true)
     .setTranslation(0, sphere.position.y, 0)
     .setLinearDamping(0.5)
     .setCanSleep(true)
@@ -254,7 +255,7 @@ function animate(now) {
   updateGamepadInput();
 
   const dir = { x: 0, y: 0, z: 0 };
-  const force = 1;
+  const force = 0.2;
 
   if (inputState.forward) dir.z -= force;
   if (inputState.backward) dir.z += force;
@@ -262,7 +263,7 @@ function animate(now) {
   if (inputState.right) dir.x += force;
 
   if (inputState.jump) {
-    dir.y += force * (inputState.src === "keypad" ? 7 : 0.7);
+    dir.y += inputState.src === "keypad" ? 5 : 0.5;
     inputState.jump = false;
     inputState.src = null;
   }

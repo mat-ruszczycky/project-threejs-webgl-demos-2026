@@ -53,8 +53,6 @@ const App = async () => {
 const animate = () => {
   if (!World.renderer || !World.scene) return;
 
-  requestAnimationFrame(animate);
-
   World.debug.begin();
   World.time.delta = World.time.clock.getDelta();
 
@@ -67,6 +65,8 @@ const animate = () => {
   }
 
   World.debug.end();
+
+  requestAnimationFrame(animate);
 };
 
 App();

@@ -30,15 +30,15 @@ const App = async () => {
   World.physics.world = physics.world;
 
   World.objects.ball = createBallMesh();
-  World.scene.add(World.objects.ball);
-
   World.physics.ball = createBall(
-    physics.RAPIER,
-    physics.world,
+    World.physics.rapier,
+    World.physics.world,
     World.objects.ball.geometry.parameters.radius
   );
 
-  createGround(physics.RAPIER, physics.world);
+  World.scene.add(World.objects.ball);
+
+  createGround(World.physics.rapier, World.physics.world);
 
   bindInput(World);
   bindResize(World.camera, World.renderer);

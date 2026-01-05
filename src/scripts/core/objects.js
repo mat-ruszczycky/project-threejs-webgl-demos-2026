@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export function initLights(scene) {
+export function createLights(scene) {
   scene.add(new THREE.AmbientLight(0xffffff, 0.5));
   scene.add(new THREE.DirectionalLight(0xffffff, 1));
 }

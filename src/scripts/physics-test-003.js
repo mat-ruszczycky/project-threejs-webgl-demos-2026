@@ -1,10 +1,13 @@
+// Styles
 import "../styles/app.scss";
+
+// Imports
 import { World } from "./core/world";
 import { bindInput } from "./core/input";
 import { bindResize } from "./core/events";
 import { initDebugger } from "./core/debug";
 import { initRenderer, initScene, initCamera } from "./core/renderer";
-import { initLights, createBallMesh } from "./core/objects";
+import { createLights, createBallMesh } from "./core/objects";
 import { initControls } from "./core/controls";
 import {
   initPhysics,
@@ -17,17 +20,16 @@ import {
 
 // App: Bootstrap
 const App = async () => {
-  World.renderer = initRenderer();
-  World.scene = initScene();
-  World.camera = initCamera();
-  World.controls = initControls(World.camera, World.renderer);
   World.debug = initDebugger(World);
-
-  initLights(World.scene);
 
   const physics = await initPhysics();
   World.physics.rapier = physics.RAPIER;
   World.physics.world = physics.world;
+
+  World.renderer = initRenderer();
+  World.scene = initScene();
+  World.camera = initCamera();
+  World.controls = initControls(World.camera, World.renderer);
 
   World.objects.ball = createBallMesh();
   World.physics.ball = createBall(
@@ -39,6 +41,7 @@ const App = async () => {
   World.scene.add(World.objects.ball);
 
   createGround(World.physics.rapier, World.physics.world);
+  createLights(World.scene);
 
   bindInput(World);
   bindResize(World.camera, World.renderer);

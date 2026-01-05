@@ -1,6 +1,6 @@
-# ThreeJS WebGL Demos 2026
+# ThreeJS Demos 2026
 
-A 2026 minimal demo setup for building 3D scenes with Three.js.
+A 2026 minimal demo repo for building with Three.js.
 
 ## Perfomance Notes
 
@@ -66,7 +66,7 @@ This is how much RAM the page/app is using.
 ## Time Management in Three.js
 
 - Use `THREE.Clock` for most Three.js projects
-- Use `requestAnimationFrame(time)` when you need engine-level control
+- Use `requestAnimationFrame(time)` for engine-level control
 
 ---
 
@@ -83,11 +83,6 @@ const delta = clock.getDelta(); // seconds since last frame
 - Returns time in seconds (no manual conversion)
 - Integrates directly with `AnimationMixer`
 - Handles pausing and first-frame timing safely
-
-**Best for**
-
-- Typical Three.js scenes
-- Animation-driven applications
 - Simpler and less error-prone timing
 
 ---
@@ -106,14 +101,8 @@ function animate(time) {
 **Why**
 
 - Full control over time calculation
-- Industry standard pattern in game engines
-- Required for fixed timesteps, physics, and networking
-
-**Best for**
-
-- Custom engine layers
-- ECS or physics-driven updates
-- Deterministic simulations
+- Pattern in game engines
+- Good for fixed timesteps, physics, and networking
 
 ---
 
@@ -145,23 +134,11 @@ function animate(time) {
 - Prevents physics instability at low or variable FPS
 - Enables deterministic behavior (important for multiplayer and replays)
 
-**Use when**
-
-- Physics accuracy matters
-- Frame rate is unpredictable
-- Deterministic updates are required
-
-### Summary (mental model)
+### Summary
 
 - **Rendering:** variable frame rate is fine
 - **Simulation / physics:** fixed timestep is preferred
 - **Most Three.js apps:** `THREE.Clock` is the right default
-
-If you want, I can also:
-
-- Add a **decision table**
-- Show **Clock + fixed timestep hybrid**
-- Tailor this for **games vs product viewers vs simulations**
 
 ## ECS
 

@@ -88,7 +88,15 @@ export function postPhysicsUpdate(world) {
   offset.subVectors(world.camera.position, world.controls.target); // current offset from target
 
   const desiredPos = ballPos.clone().add(offset); // maintain offset relative to ball
-  world.camera.position.lerp(desiredPos, 0.1); // smooth follow
+
+  if (world.keyDown) {
+    world.camera.position.lerp(
+      { x: ballPos.x + 6, y: 6, z: ballPos.z + 6 },
+      0.05
+    );
+  } else {
+    world.camera.position.lerp(desiredPos, 0.1); // smooth follow
+  }
 
   world.controls.update();
 }

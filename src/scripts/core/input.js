@@ -8,6 +8,7 @@ function bindInput(world) {
   };
 
   window.addEventListener("keydown", (e) => {
+    world.keyDown = true;
     if (e.code === "Escape") {
       world.state.paused = !world.state.paused;
       document.body.classList.toggle("paused", world.state.paused);
@@ -20,6 +21,7 @@ function bindInput(world) {
   });
 
   window.addEventListener("keyup", (e) => {
+    world.keyDown = false;
     if (map[e.code]) world.input[map[e.code]] = false;
   });
 }

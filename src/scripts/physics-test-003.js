@@ -1,7 +1,11 @@
 import "../styles/app.scss";
-import World from "./core/world";
+import { World } from "./core/world";
+import { bindInput } from "./core/input";
+import { bindResize } from "./core/events";
+import { initDebugger } from "./core/debug";
 import { initRenderer, initScene, initCamera } from "./core/renderer";
 import { initLights, createBallMesh } from "./core/objects";
+import { initControls } from "./core/controls";
 import {
   initPhysics,
   createGround,
@@ -10,12 +14,8 @@ import {
   stepPhysics,
   postPhysicsUpdate,
 } from "./core/physics";
-import bindInput from "./core/input";
-import { bindResize } from "./core/events";
-import initDebugger from "./core/debug";
-import initControls from "./core/controls";
 
-// APP
+// App: Bootstrap
 const App = async () => {
   World.renderer = initRenderer();
   World.scene = initScene();
@@ -46,6 +46,7 @@ const App = async () => {
   animate();
 };
 
+// App: Main Loop
 const animate = () => {
   requestAnimationFrame(animate);
 

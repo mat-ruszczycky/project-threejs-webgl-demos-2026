@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-const World = {
+export const World = {
   state: { paused: false },
 
   input: {
@@ -27,5 +27,3 @@ const World = {
 
   objects: {},
 };
-
-export default World;

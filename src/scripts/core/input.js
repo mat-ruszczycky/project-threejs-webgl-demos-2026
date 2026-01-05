@@ -1,4 +1,4 @@
-function bindInput(world) {
+export function bindInput(world) {
   const map = {
     KeyW: "forward",
     KeyS: "backward",
@@ -25,5 +25,3 @@ function bindInput(world) {
     if (map[e.code]) world.input[map[e.code]] = false;
   });
 }
-
-export default bindInput;

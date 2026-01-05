@@ -1,7 +1,7 @@
 import Stats from "three/addons/libs/stats.module.js";
 import { Pane } from "tweakpane";
 
-function initDebugger(world) {
+export function initDebugger(world) {
   const pane = new Pane({ title: "Debugger" });
 
   pane.addBinding(world.state, "paused").on("change", ({ value }) => {
@@ -37,5 +37,3 @@ function initDebugger(world) {
     end: () => stats.forEach((s) => s.end()),
   };
 }
-
-export default initDebugger;

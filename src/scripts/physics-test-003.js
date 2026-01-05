@@ -51,6 +51,8 @@ const App = async () => {
 
 // App: Main Loop
 const animate = () => {
+  if (!World.renderer || !World.scene) return;
+
   requestAnimationFrame(animate);
 
   World.debug.begin();

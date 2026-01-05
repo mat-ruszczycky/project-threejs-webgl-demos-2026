@@ -65,6 +65,11 @@ export function updateBallControls(world) {
   }
 }
 
+// Extract magic numbers to constants:
+// const BALL_FORCE = 0.2;
+// const JUMP_IMPULSE = 8;
+// const GRAVITY_SCALE = 8;
+
 export function postPhysicsUpdate(world) {
   const body = world.physics.ball;
   const mesh = world.objects.ball;
@@ -88,6 +93,9 @@ export function postPhysicsUpdate(world) {
   offset.subVectors(world.camera.position, world.controls.target); // current offset from target
 
   const desiredPos = ballPos.clone().add(offset); // maintain offset relative to ball
+
+  const rot = body.rotation();
+  mesh.quaternion.set(rot.x, rot.y, rot.z, rot.w);
 
   if (world.keyDown) {
     world.camera.position.lerp(

@@ -8,7 +8,7 @@ export function initRenderer() {
   });
 
   renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(1);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   return renderer;
 }
 

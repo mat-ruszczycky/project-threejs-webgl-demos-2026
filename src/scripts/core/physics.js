@@ -2,9 +2,20 @@ import * as THREE from "three";
 
 export async function initPhysics() {
   const RAPIER = await import("@dimforge/rapier3d");
-
   const world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
   return { RAPIER, world };
+}
+
+export function stepPhysics(world) {
+  const t = world.time;
+  t.accumulator += t.delta;
+
+  let steps = 0;
+  while (t.accumulator >= t.fixedStep && steps < t.maxSubSteps) {
+    world.physics.world.step();
+    t.accumulator -= t.fixedStep;
+    steps++;
+  }
 }
 
 export function createGround(RAPIER, world) {
@@ -54,17 +65,6 @@ export function updateBallControls(world) {
   }
 }
 
-export function stepPhysics(world) {
-  const t = world.time;
-  t.accumulator += t.delta;
-
-  let steps = 0;
-  while (t.accumulator >= t.fixedStep && steps < t.maxSubSteps) {
-    world.physics.world.step();
-    t.accumulator -= t.fixedStep;
-    steps++;
-  }
-}
 export function postPhysicsUpdate(world) {
   const body = world.physics.ball;
   const mesh = world.objects.ball;
@@ -73,6 +73,7 @@ export function postPhysicsUpdate(world) {
 
   if (pos.y < -10) {
     body.setTranslation({ x: 6, y: 10, z: 6 }, true);
+    pos = body.translation();
     world.time.accumulator = 0;
     return;
   }

@@ -195,10 +195,14 @@ const world = new Rapier.World({ x: 0, y: -30, z: 0 });
 const eventQueue = new Rapier.EventQueue(true);
 world.timestep = FIXED_TIMESTEP;
 
+// Ground
 world.createCollider(
-  Rapier.ColliderDesc.cuboid(125, 0.1, 125).setFriction(0.8).setRestitution(0.2)
+  Rapier.ColliderDesc.cuboid(125, 0.1, 125)
+    .setFriction(0.8)
+    .setRestitution(0.15)
 );
 
+// Sphere
 const rigidBody = world.createRigidBody(
   Rapier.RigidBodyDesc.dynamic()
     .setTranslation(0, sphere.position.y, 0)

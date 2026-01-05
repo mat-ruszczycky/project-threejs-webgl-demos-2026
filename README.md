@@ -140,7 +140,7 @@ function animate(time) {
 - **Simulation / physics:** fixed timestep is preferred
 - **Most Three.js apps:** `THREE.Clock` is the right default
 
-## ECS Paradgim
+## ECS Paradigm
 
 - **Entities** = IDs
 - **Components** = data only

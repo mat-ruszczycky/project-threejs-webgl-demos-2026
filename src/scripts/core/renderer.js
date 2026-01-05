@@ -9,6 +9,8 @@ export function initRenderer() {
 
   renderer.setSize(innerWidth, innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+
   return renderer;
 }
 

@@ -69,7 +69,7 @@ export function postPhysicsUpdate(world) {
   const body = world.physics.ball;
   const mesh = world.objects.ball;
 
-  const pos = body.translation();
+  let pos = body.translation();
 
   if (pos.y < -10) {
     body.setTranslation({ x: 6, y: 10, z: 6 }, true);

@@ -14,6 +14,16 @@
  10. App Bootstrap
  */
 
+/*
+ /world.js
+/physics.js
+/input.js
+/render.js
+/debug.js
+/app.js
+
+ */
+
 // -------------------------
 // STYLES
 // -------------------------
@@ -64,12 +74,12 @@ const World = {
 function initRenderer() {
   const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector("#webgl"),
-    antialias: true,
+    antialias: false,
     powerPreference: "high-performance",
   });
 
   renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(0.25);
   return renderer;
 }
 

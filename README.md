@@ -140,12 +140,10 @@ function animate(time) {
 - **Simulation / physics:** fixed timestep is preferred
 - **Most Three.js apps:** `THREE.Clock` is the right default
 
-## ECS
+## ECS Paradgim
 
 - **Entities** = IDs
 - **Components** = data only
 - **Systems** = logic that operates on entities with certain components
 
-### Why:
-
-It kills god-objects, scales cleanly, is faster, easier to refactor, and makes features like AI, multiplayer, and replays manageable instead of painful. **ECS keeps complexity under control as projects grow.**
+Kills god-objects, scales cleanly, is faster, easier to refactor, and makes features like AI, multiplayer, and replays manageable instead of painful. **ECS keeps complexity under control as projects grow.**

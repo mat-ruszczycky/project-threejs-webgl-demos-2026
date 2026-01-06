@@ -46,8 +46,8 @@ export function createBall(RAPIER, world, radius, startY = 6) {
     RAPIER.RigidBodyDesc.dynamic()
       .setTranslation(0, startY, 0) // Sets the starting position of the object in 3D space (x, y, z).
       .setGravityScale(8, true) // Makes gravity 8× stronger for this object; the 'true' may mean it resets velocity when changed.
-      .setLinearDamping(1) // Slows down straight-line movement over time (like air resistance).
-      .setAngularDamping(1.5) // Slows down rotation over time.
+      .setLinearDamping(0.9) // Slows down straight-line movement over time (like air resistance).
+      .setAngularDamping(1.15) // Slows down rotation over time.
       .setCanSleep(true) // Allows the object to go to "sleep" when at rest to save performance.
   );
 

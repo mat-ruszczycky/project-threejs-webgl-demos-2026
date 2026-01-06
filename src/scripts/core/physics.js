@@ -11,7 +11,7 @@ export async function initPhysics() {
   }
 }
 
-// “fixed time step” pattern
+// “Fixed Time Step” pattern
 export function stepPhysics(world) {
   const t = world.time;
   t.accumulator += t.delta;

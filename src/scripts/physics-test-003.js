@@ -62,7 +62,7 @@ const animate = () => {
   updateGamepadInput();
 
   if (!World.state.paused) {
-    updateBallMovementda(World);
+    updateBallMovement(World);
     stepPhysics(World);
     postPhysicsUpdate(World);
 

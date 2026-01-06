@@ -30,7 +30,7 @@ const inputState = {
 // CORE - DEBUG
 // -------------------------
 import { World } from "./core/world";
-import { initDebugger } from "./core/debug";
+import { initDebugger } from "./core-001/debug";
 
 const debug = initDebugger(World);
 

@@ -246,7 +246,7 @@ function bindInput(world) {
 // -------------------------
 // DEBUG
 // -------------------------
-import { initDebugger } from "./core/debug";
+import { initDebugger } from "./core-001/debug";
 
 // -------------------------
 // BINDINGS

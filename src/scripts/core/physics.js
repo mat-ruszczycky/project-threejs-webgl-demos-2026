@@ -102,8 +102,6 @@ export function postPhysicsUpdate(world) {
 
   const ball = world.objects.ball;
 
-  // Convert to Three.js Vector3/Quaternion once
-  // Update OrbitControls target smoothly to the ball
   const ballTargetPosition = new THREE.Vector3(
     rigidPosition.x,
     rigidPosition.y,

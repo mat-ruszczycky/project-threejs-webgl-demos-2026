@@ -33,21 +33,24 @@ export function createGround(RAPIER, world) {
   let rigidBodyDesc = RAPIER.RigidBodyDesc.fixed();
   let rigidBody = world.createRigidBody(rigidBodyDesc);
 
-  let colliderDesc = RAPIER.ColliderDesc.cuboid(4.5, 1.5, 4.5);
+  let colliderDesc = RAPIER.ColliderDesc.cuboid(4.5, 1.5, 4.5)
+    .setFriction(1) // Sets surface friction. 1 means high friction, so objects will resist sliding.
+    .setRestitution(0.25); // Sets how bouncy the object is. 0.25 means it barely bounces.
   let collider = world.createCollider(colliderDesc, rigidBody);
 }
 
 export function createBall(RAPIER, world, radius, startY = 6) {
   const body = world.createRigidBody(
     RAPIER.RigidBodyDesc.dynamic()
-      .setTranslation(0, startY, 0)
-      .setGravityScale(8, true)
-      .setLinearDamping(0.5)
-      .setCanSleep(true)
+      .setTranslation(0, startY, 0) // Sets the starting position of the object in 3D space (x, y, z).
+      .setGravityScale(8, true) // Makes gravity 8× stronger for this object; the 'true' may mean it resets velocity when changed.
+      .setLinearDamping(2) // Slows down straight-line movement over time (like air resistance).
+      .setAngularDamping(2) // Slows down rotation over time.
+      .setCanSleep(true) // Allows the object to go to "sleep" when at rest to save performance.
   );
 
   world.createCollider(
-    RAPIER.ColliderDesc.ball(radius).setFriction(0.6).setRestitution(0.96),
+    RAPIER.ColliderDesc.ball(radius).setFriction(1).setRestitution(0.9),
     body
   );
 

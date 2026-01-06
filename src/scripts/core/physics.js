@@ -78,35 +78,26 @@ export function updateBallMovement(world) {
   const body = world.physics.ball;
   if (!body) return;
 
-  const dir = { x: 0, y: 0, z: 0 };
-  const force = world.time.delta * 15;
+  const impulse = { x: 0, y: 0, z: 0 };
+  const moveForce = world.time.delta * 15;
 
-  // Input directions
-  if (world.input.forward) dir.z -= force;
-  if (world.input.backward) dir.z += force;
-  if (world.input.left) dir.x -= force;
-  if (world.input.right) dir.x += force;
+  if (world.input.forward) impulse.z -= moveForce;
+  if (world.input.backward) impulse.z += moveForce;
+  if (world.input.left) impulse.x -= moveForce;
+  if (world.input.right) impulse.x += moveForce;
 
-  // Jump (only apply big impulse on initial press)
   if (world.input.jump) {
-    dir.y += world.keyDown ? 10 : 1; // 10 on first frame, 1 if held
+    impulse.y += world.keyDown ? 10 : 1;
     world.input.jump = false;
   }
 
-  if (dir.x || dir.y || dir.z) {
-    const vel = body.linvel();
+  // Quick stop damping
+  const vel = body.linvel();
+  if (impulse.x === 0) vel.x *= 0.9;
+  if (impulse.z === 0) vel.z *= 0.9;
 
-    // Apply extra damping on axes with no input (quick stop)
-    // 0.85–0.95 works well; lower = faster stop
-    if (dir.x === 0) vel.x *= 0.9;
-    if (dir.z === 0) vel.z *= 0.9;
-
-    // Set the damped velocity back
-    body.setLinvel(vel, true);
-
-    // Then apply the movement impulse on top
-    body.applyImpulse(dir, true);
-  }
+  body.setLinvel(vel, true);
+  body.applyImpulse(impulse, true);
 }
 
 export function postPhysicsUpdate(world) {

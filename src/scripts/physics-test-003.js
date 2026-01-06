@@ -13,9 +13,7 @@ import {
   initPhysics,
   createGround,
   createBall,
-  updateBallMovement,
-  stepPhysics,
-  postPhysicsUpdate,
+  updatePhysics,
 } from "./core/physics";
 
 // App: Bootstrap
@@ -62,9 +60,7 @@ const animate = () => {
 
   if (!World.state.paused) {
     updateGamepadInput();
-    updateBallMovement(World);
-    stepPhysics(World);
-    postPhysicsUpdate(World);
+    updatePhysics(World);
     World.renderer.render(World.scene, World.camera);
   }
 

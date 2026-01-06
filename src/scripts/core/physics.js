@@ -143,3 +143,9 @@ export function postPhysicsUpdate(world) {
 
   world.controls.update();
 }
+
+export function updatePhysics(World) {
+  updateBallMovement(World);
+  stepPhysics(World);
+  postPhysicsUpdate(World);
+}

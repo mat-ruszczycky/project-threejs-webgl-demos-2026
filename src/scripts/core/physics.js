@@ -35,21 +35,11 @@ export function createGround(RAPIER, world) {
   let rigidBodyDesc = RAPIER.RigidBodyDesc.fixed();
   let rigidBody = world.createRigidBody(rigidBodyDesc);
 
-  /*
-  Collider Properties
-  TBD ADD NOTES
-  */
-
   let colliderDesc = RAPIER.ColliderDesc.cuboid(4.5, 1.5, 4.5)
     .setFriction(0.75) // Sets surface friction. 1 means high friction, so objects will resist sliding.
     .setRestitution(0.33); // Sets how bouncy the object is. 0.25 means it barely bounces.
   let collider = world.createCollider(colliderDesc, rigidBody);
 }
-
-/*
-  Rigid Body Properties
-    TBD ADD NOTES
-*/
 
 export function createBall(RAPIER, world, radius, startY = 6) {
   const body = world.createRigidBody(

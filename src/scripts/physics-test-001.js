@@ -29,7 +29,7 @@ const inputState = {
 
 // CORE - DEBUG
 // -------------------------
-import { World } from "./core/world";
+import { World } from "./core-001/world";
 import { initDebugger } from "./core-001/debug";
 
 const debug = initDebugger(World);

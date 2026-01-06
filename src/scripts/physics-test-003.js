@@ -3,7 +3,7 @@ import "../styles/app.scss";
 
 // Imports
 import { World } from "./core/world";
-import { bindInput } from "./core/input";
+import { bindInput, updateGamepadInput } from "./core/input";
 import { bindResize } from "./core/events";
 import { initDebugger } from "./core/debug";
 import { initRenderer, initScene, initCamera } from "./core/renderer";
@@ -58,6 +58,7 @@ const animate = () => {
 
   World.debug.begin();
   World.time.delta = World.time.clock.getDelta();
+  updateGamepadInput();
 
   if (!World.state.paused) {
     updateBallControls(World);

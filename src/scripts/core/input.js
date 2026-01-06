@@ -1,3 +1,5 @@
+import { World } from "./world";
+
 export function bindInput(world) {
   const map = {
     KeyW: "forward",
@@ -25,3 +27,17 @@ export function bindInput(world) {
     if (map[e.code]) world.input[map[e.code]] = false;
   });
 }
+
+export const updateGamepadInput = () => {
+  if (World.state.paused) return;
+
+  const gp = navigator.getGamepads()?.[0];
+  if (!gp) return;
+
+  World.input.forward = gp.buttons[12]?.pressed || gp.axes[1] < -0.5;
+  World.input.backward = gp.buttons[13]?.pressed || gp.axes[1] > 0.5;
+  World.input.left = gp.buttons[14]?.pressed || gp.axes[0] < -0.5;
+  World.input.right = gp.buttons[15]?.pressed || gp.axes[0] > 0.5;
+  World.input.jump = gp.buttons[0]?.pressed;
+  World.input.src = "gamepad";
+};

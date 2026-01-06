@@ -67,7 +67,7 @@ export function updateBallControls(world) {
   if (world.input.right) dir.x += force;
 
   if (world.input.jump) {
-    dir.y += world.keyDown === "keypad" ? 10 : 1;
+    dir.y += world.keyDown ? 10 : 1;
     world.input.jump = false;
   }
 

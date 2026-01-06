@@ -70,7 +70,6 @@ const animate = () => {
   }
 
   World.debug.end();
-
   requestAnimationFrame(animate);
 };
 

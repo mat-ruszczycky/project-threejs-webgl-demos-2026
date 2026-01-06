@@ -102,9 +102,8 @@ export function updateBallMovement(world) {
 
 export function postPhysicsUpdate(world) {
   const ballRigidBody = world.physics.ball;
+  const rigidPosition = ballRigidBody.translation();
   const ball = world.objects.ball;
-
-  let rigidPosition = ballRigidBody.translation();
 
   if (rigidPosition.y < -10) {
     ballRigidBody.setTranslation({ x: 0, y: 10, z: 0 }, true);

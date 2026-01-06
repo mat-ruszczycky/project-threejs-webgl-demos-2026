@@ -36,18 +36,6 @@ export function createGround(RAPIER, world) {
   /*
   Collider Properties
 
-  .setFriction(0.5)               // Surface friction; higher = harder to slide.
-  .setRestitution(0.25)           // Bounciness; 0 = no bounce, 1 = super bouncy.
-  .setRestitutionThreshold(1)      // Minimum impact speed for bouncing to occur.
-  .setCollisionLayer(0x0001)       // Defines what layer this collider belongs to.
-  .setCollisionMask(0xFFFF)        // Defines what layers this collider can collide with.
-  .setSensor(false)                // If true, detects collisions but doesn’t respond physically.
-  .setTrigger(true)                // Like a sensor; can detect overlap events.
-  .setShape(Box, Sphere, Capsule)  // Defines collider shape.
-  .setSize(width, height, depth)   // Collider dimensions (for box/capsule).
-  .setRadius(value)                // Radius for sphere/capsule colliders.
-  .setOffset(x, y, z)              // Shift collider relative to the object’s center.
-  .setCompoundChildren(true)       // Treats multiple child colliders as one compound shape.
 */
 
   let colliderDesc = RAPIER.ColliderDesc.cuboid(4.5, 1.5, 4.5)
@@ -58,30 +46,7 @@ export function createGround(RAPIER, world) {
 
 /*
   Rigid Body Properties
-  // Position & Motion
-  .setTranslation(x, y, z)        // Set starting position in world space.
-  .setRotation(x, y, z)           // Set starting rotation (Euler angles or quaternion).
-  .setVelocity(x, y, z)           // Initial movement speed.
-  .setAngularVelocity(x, y, z)    // Initial rotational speed.
 
-  // Mass & Forces
-  .setMass(1)                     // Mass; heavier = harder to move.
-  .setGravityScale(1, true)       // Multiplies gravity effect; 'true' may reset velocity.
-  .applyForce(forceX, forceY, forceZ)  // Apply a force to move the object.
-  .applyImpulse(impX, impY, impZ)      // Apply an instant, one-time push.
-  .setLinearDamping(0)             // Slows linear movement over time (like air resistance).
-  .setAngularDamping(0)            // Slows rotation over time.
-  .setCanSleep(true)               // Allows physics engine to deactivate object at rest for performance.
-  .setSleepingThreshold(0.1)       // How still it must be before sleeping.
-  .setKinematic(true)              // Object moves only via code; unaffected by forces or collisions.
-
-  // Rotation Constraints
-  .setFixedRotation(true)          // Prevents rotation entirely.
-  .setRotationConstraints(x, y, z) // Locks rotation on specific axes.
-
-  // Speed Limits
-  .setLinearVelocityLimit(10)      // Maximum linear speed.
-  .setAngularVelocityLimit(5)      // Maximum rotational speed.
 */
 
 export function createBall(RAPIER, world, radius, startY = 6) {

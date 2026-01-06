@@ -102,8 +102,10 @@ export function updateBallMovement(world) {
 
 export function postPhysicsUpdate(world) {
   const ballRigidBody = world.physics.ball;
+  if (!ballRigidBody) return;
+
   const rigidPosition = ballRigidBody.translation();
-  const ball = world.objects.ball;
+  const rigidRot = ballRigidBody.rotation();
 
   if (rigidPosition.y < -10) {
     ballRigidBody.setTranslation({ x: 0, y: 10, z: 0 }, true);
@@ -113,11 +115,21 @@ export function postPhysicsUpdate(world) {
     return;
   }
 
+  const ball = world.objects.ball;
+
+  // Convert to Three.js Vector3/Quaternion once
   // Update OrbitControls target smoothly to the ball
   const ballTargetPosition = new THREE.Vector3(
     rigidPosition.x,
     rigidPosition.y,
     rigidPosition.z
+  );
+
+  const ballTargetQuat = new THREE.Quaternion(
+    rigidRot.x,
+    rigidRot.y,
+    rigidRot.z,
+    rigidRot.w
   );
 
   const lerpedBallTargetPosition = world.controls.target.lerp(
@@ -131,13 +143,7 @@ export function postPhysicsUpdate(world) {
     lerpedBallTargetPosition.z
   );
 
-  const ballRotation = ballRigidBody.rotation();
-  ball.quaternion.set(
-    ballRotation.x,
-    ballRotation.y,
-    ballRotation.z,
-    ballRotation.w
-  );
+  ball.quaternion.copy(ballTargetQuat);
 
   // Smooth follow: move camera relative to its current offset from target
   const cameraOffset = new THREE.Vector3();
@@ -147,14 +153,17 @@ export function postPhysicsUpdate(world) {
 
   // maintain offset relative to ball
   const cameraDesiredPos = ballTargetPosition.clone().add(cameraOffset);
-  ballTargetPosition.add({ x: 6, z: 6 });
 
   if (world.keyDown) {
+    const targetPosition = ballTargetPosition
+      .clone()
+      .add(new THREE.Vector3(6, 0, 6));
+
     world.camera.position.lerp(
       {
-        x: ballTargetPosition.x,
+        x: targetPosition.x,
         y: 6,
-        z: ballTargetPosition.z,
+        z: targetPosition.z,
       },
       0.05
     );

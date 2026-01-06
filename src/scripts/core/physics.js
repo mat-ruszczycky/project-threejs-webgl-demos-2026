@@ -73,25 +73,37 @@ export function createBall(RAPIER, world, radius, startY = 6) {
 
   return body;
 }
-
 export function updateBallMovement(world) {
   const body = world.physics.ball;
   if (!body) return;
 
   const dir = { x: 0, y: 0, z: 0 };
-  const force = 0.2;
+  const force = 0.25;
 
+  // Input directions
   if (world.input.forward) dir.z -= force;
   if (world.input.backward) dir.z += force;
   if (world.input.left) dir.x -= force;
   if (world.input.right) dir.x += force;
 
+  // Jump (only apply big impulse on initial press)
   if (world.input.jump) {
-    dir.y += world.keyDown ? 10 : 1;
+    dir.y += world.keyDown ? 10 : 1; // 10 on first frame, 1 if held
     world.input.jump = false;
   }
 
   if (dir.x || dir.y || dir.z) {
+    const vel = body.linvel();
+
+    // Apply extra damping on axes with no input (quick stop)
+    // 0.85–0.95 works well; lower = faster stop
+    if (dir.x === 0) vel.x *= 0.9;
+    if (dir.z === 0) vel.z *= 0.9;
+
+    // Set the damped velocity back
+    body.setLinvel(vel, true);
+
+    // Then apply the movement impulse on top
     body.applyImpulse(dir, true);
   }
 }

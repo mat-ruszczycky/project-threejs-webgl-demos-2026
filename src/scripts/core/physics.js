@@ -1,5 +1,10 @@
 import * as THREE from "three";
 
+// Extract magic numbers to constants:
+// const BALL_FORCE = 0.2;
+// const JUMP_IMPULSE = 8;
+// const GRAVITY_SCALE = 8;
+
 export async function initPhysics() {
   try {
     const RAPIER = await import("@dimforge/rapier3d");
@@ -91,45 +96,65 @@ export function updateBallMovement(world) {
   }
 }
 
-// Extract magic numbers to constants:
-// const BALL_FORCE = 0.2;
-// const JUMP_IMPULSE = 8;
-// const GRAVITY_SCALE = 8;
-
 export function postPhysicsUpdate(world) {
-  const body = world.physics.ball;
-  const mesh = world.objects.ball;
+  const ballRigidBody = world.physics.ball;
+  const ball = world.objects.ball;
 
-  let pos = body.translation();
+  let rigidPosition = ballRigidBody.translation();
 
-  if (pos.y < -10) {
-    body.setTranslation({ x: 6, y: 10, z: 6 }, true);
-    pos = body.translation();
+  if (rigidPosition.y < -10) {
+    ballRigidBody.setTranslation({ x: 6, y: 10, z: 6 }, true);
+    rigidPosition = ballRigidBody.translation();
     world.time.accumulator = 0;
     return;
   }
 
   // Update OrbitControls target smoothly to the ball
-  const ballPos = new THREE.Vector3(pos.x, pos.y, pos.z);
-  const p = world.controls.target.lerp(ballPos, 0.1);
-  mesh.position.set(p.x, ballPos.y, p.z);
+  const ballTargetPosition = new THREE.Vector3(
+    rigidPosition.x,
+    rigidPosition.y,
+    rigidPosition.z
+  );
+
+  const lerpedBallTargetPosition = world.controls.target.lerp(
+    ballTargetPosition,
+    0.1
+  );
+
+  ball.position.set(
+    lerpedBallTargetPosition.x,
+    ballTargetPosition.y, // Intentional as gravity will control this
+    lerpedBallTargetPosition.z
+  );
+
+  const ballRotation = ballRigidBody.rotation();
+  ball.quaternion.set(
+    ballRotation.x,
+    ballRotation.y,
+    ballRotation.z,
+    ballRotation.w
+  );
 
   // Smooth follow: move camera relative to its current offset from target
-  const offset = new THREE.Vector3();
-  offset.subVectors(world.camera.position, world.controls.target); // current offset from target
+  const cameraOffset = new THREE.Vector3();
 
-  const desiredPos = ballPos.clone().add(offset); // maintain offset relative to ball
+  // current offset from target
+  cameraOffset.subVectors(world.camera.position, world.controls.target);
 
-  const rot = body.rotation();
-  mesh.quaternion.set(rot.x, rot.y, rot.z, rot.w);
+  // maintain offset relative to ball
+  const cameraDesiredPos = ballTargetPosition.clone().add(cameraOffset);
 
   if (world.keyDown) {
     world.camera.position.lerp(
-      { x: ballPos.x + 6, y: 6, z: ballPos.z + 6 },
+      {
+        x: ballTargetPosition.x + 6,
+        y: 6,
+        z: ballTargetPosition.z + 6,
+      },
       0.05
     );
   } else {
-    world.camera.position.lerp(desiredPos, 0.1); // smooth follow
+    world.camera.position.lerp(cameraDesiredPos, 0.1);
   }
 
   world.controls.update();

@@ -36,36 +36,9 @@ const World = {
 // -------------------------
 // DEBUGGER
 // -------------------------
-function createDebugger(world) {
-  const pane = new Pane({ title: "Debugger" });
+import { initDebugger } from "./core/debug";
 
-  pane
-    .addBinding(world.state, "paused", { label: "Paused" })
-    .on("change", ({ value }) => {
-      document.body.classList.toggle("paused", value);
-    });
-
-  const nav = pane.addFolder({ title: "Navigation" });
-  nav.addButton({ title: "Home" }).on("click", () => {
-    window.location.href = "../";
-  });
-  nav.addButton({ title: "3JS Docs" }).on("click", () => {
-    window.open("https://threejs.org/docs/", "_blank");
-  });
-
-  const stats = ["fps", "ms", "mb"].map((_, i) => {
-    const s = new Stats();
-    s.showPanel(i);
-    s.dom.style.cssText = `position:absolute;top:${i * 48}px;left:0;`;
-    document.body.appendChild(s.dom);
-    return s;
-  });
-
-  return {
-    begin: () => stats.forEach((s) => s.begin()),
-    end: () => stats.forEach((s) => s.end()),
-  };
-}
+const debug = initDebugger(World);
 
 // -------------------------
 // THREE SETUP
@@ -195,7 +168,7 @@ World.renderer = createRenderer();
 World.scene = createScene();
 World.camera = createCamera();
 World.controls = createControls(World.camera, World.renderer);
-World.debug = createDebugger(World);
+World.debug = initDebugger(World);
 
 bindInput(World);
 bindResize(World.camera, World.renderer);

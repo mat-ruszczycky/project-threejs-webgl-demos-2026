@@ -5,8 +5,6 @@ import "./../styles/app.scss";
 // APP
 // -------------------------
 import * as THREE from "three";
-import Stats from "three/addons/libs/stats.module.js";
-import { Pane } from "tweakpane";
 
 // GLOBAL(S)
 // -------------------------
@@ -31,63 +29,10 @@ const inputState = {
 
 // CORE - DEBUG
 // -------------------------
+import { World } from "./core/world";
+import { initDebugger } from "./core/debug";
 
-// Tweakplane - https://github.com/cocopon/tweakpane
-const PARAMS = {
-  paused: false,
-};
-
-const pane = new Pane({ title: "Debugger" });
-
-const statesPane = pane.addFolder({
-  title: "States",
-});
-
-statesPane
-  .addBinding(PARAMS, "paused", { label: "Paused" })
-  .on("change", (e) => {
-    togglePause();
-  });
-
-const navPane = pane.addFolder({
-  title: "Navigation",
-});
-
-navPane
-  .addButton({
-    title: "Home",
-  })
-  .on("click", (e) => {
-    window.location.href = "../";
-  });
-
-navPane
-  .addButton({ title: "ThreeJS Docs" })
-  .on("click", () => window.open("https://threejs.org/docs/", "_blank"));
-
-navPane
-  .addButton({ title: "RAPIER Docs" })
-  .on("click", () =>
-    window.open(
-      "https://rapier.rs/docs/user_guides/javascript/getting_started_js",
-      "_blank"
-    )
-  );
-
-const statsFPS = new Stats();
-statsFPS.showPanel(0);
-statsFPS.dom.style.cssText = "position:absolute;top:0;left:0;";
-document.body.appendChild(statsFPS.dom);
-
-const statsMS = new Stats();
-statsMS.showPanel(1);
-statsMS.dom.style.cssText = "position:absolute;top:48px;left:0;";
-document.body.appendChild(statsMS.dom);
-
-const statsMB = new Stats();
-statsMB.showPanel(2);
-statsMB.dom.style.cssText = "position:absolute;top:96px;left:0;";
-document.body.appendChild(statsMB.dom);
+const debug = initDebugger(World);
 
 // RENDERER
 // -------------------------
@@ -250,15 +195,11 @@ function togglePause() {
 function animate(now) {
   requestAnimationFrame(animate);
 
-  statsFPS.begin();
-  statsMS.begin();
-  statsMB.begin();
+  debug.begin();
 
   if (isPaused) {
     lastTime = now;
-    statsFPS.end();
-    statsMS.end();
-    statsMB.end();
+    debug.end();
     return;
   }
 
@@ -307,9 +248,7 @@ function animate(now) {
 
   renderer.render(scene, camera);
 
-  statsFPS.end();
-  statsMS.end();
-  statsMB.end();
+  debug.end();
 }
 
 // START

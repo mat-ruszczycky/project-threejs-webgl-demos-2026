@@ -184,32 +184,7 @@ function bindInput(world) {
 // -------------------------
 // DEBUG
 // -------------------------
-function initDebugger(world) {
-  const pane = new Pane({ title: "Debugger" });
-
-  pane.addBinding(world.state, "paused").on("change", ({ value }) => {
-    document.body.classList.toggle("paused", value);
-  });
-
-  const nav = pane.addFolder({ title: "Navigation" });
-  nav.addButton({ title: "Home" }).on("click", () => (location.href = "../"));
-  nav
-    .addButton({ title: "Three.js Docs" })
-    .on("click", () => window.open("https://threejs.org/docs/", "_blank"));
-
-  const stats = ["fps", "ms", "mb"].map((_, i) => {
-    const s = new Stats();
-    s.showPanel(i);
-    s.dom.style.cssText = `position:absolute;top:${i * 48}px;left:0;`;
-    document.body.appendChild(s.dom);
-    return s;
-  });
-
-  return {
-    begin: () => stats.forEach((s) => s.begin()),
-    end: () => stats.forEach((s) => s.end()),
-  };
-}
+import { initDebugger } from "./core/debug";
 
 // -------------------------
 // BINDING/HANDLERS

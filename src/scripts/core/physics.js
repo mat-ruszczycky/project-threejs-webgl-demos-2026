@@ -1,10 +1,5 @@
 import * as THREE from "three";
 
-// Extract magic numbers to constants:
-// const BALL_FORCE = 0.2;
-// const JUMP_IMPULSE = 8;
-// const GRAVITY_SCALE = 8;
-
 export async function initPhysics() {
   try {
     const RAPIER = await import("@dimforge/rapier3d");

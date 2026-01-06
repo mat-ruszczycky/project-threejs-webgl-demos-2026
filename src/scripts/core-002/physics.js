@@ -71,7 +71,9 @@ export function updateBallMovement(world) {
   if (world.input.left) impulse.x -= moveForce;
   if (world.input.right) impulse.x += moveForce;
 
-  if (world.input.jump) {
+  console.dir(world);
+
+  if (world.input.jump && world.objects.ball.position.y < 8) {
     impulse.y += world.keyDown ? 10 : 1;
     world.input.jump = false;
   }

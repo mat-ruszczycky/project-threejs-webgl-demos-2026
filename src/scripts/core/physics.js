@@ -11,11 +11,13 @@ export async function initPhysics() {
   }
 }
 
+// “fixed time step” pattern
 export function stepPhysics(world) {
   const t = world.time;
   t.accumulator += t.delta;
 
   let steps = 0;
+
   while (t.accumulator >= t.fixedStep && steps < t.maxSubSteps) {
     world.physics.world.step();
     t.accumulator -= t.fixedStep;

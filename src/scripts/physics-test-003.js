@@ -65,7 +65,6 @@ const animate = () => {
     updateBallMovement(World);
     stepPhysics(World);
     postPhysicsUpdate(World);
-
     World.renderer.render(World.scene, World.camera);
   }
 

@@ -73,12 +73,13 @@ export function createBall(RAPIER, world, radius, startY = 6) {
 
   return body;
 }
+
 export function updateBallMovement(world) {
   const body = world.physics.ball;
   if (!body) return;
 
   const dir = { x: 0, y: 0, z: 0 };
-  const force = 0.25;
+  const force = world.time.delta * 15;
 
   // Input directions
   if (world.input.forward) dir.z -= force;
@@ -115,8 +116,9 @@ export function postPhysicsUpdate(world) {
   let rigidPosition = ballRigidBody.translation();
 
   if (rigidPosition.y < -10) {
-    ballRigidBody.setTranslation({ x: 6, y: 10, z: 6 }, true);
-    rigidPosition = ballRigidBody.translation();
+    ballRigidBody.setTranslation({ x: 0, y: 10, z: 0 }, true);
+    ballRigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
+    ballRigidBody.setAngvel({ x: 0, y: 0, z: 0 }, true);
     world.time.accumulator = 0;
     return;
   }

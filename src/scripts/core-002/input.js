@@ -11,6 +11,7 @@ export function bindInput(world) {
 
   window.addEventListener("keydown", (e) => {
     world.keyDown = true;
+
     if (e.code === "Escape") {
       world.state.paused = !world.state.paused;
       document.body.classList.toggle("paused", world.state.paused);
@@ -39,5 +40,4 @@ export const updateGamepadInput = () => {
   World.input.left = gp.buttons[14]?.pressed || gp.axes[0] < -0.5;
   World.input.right = gp.buttons[15]?.pressed || gp.axes[0] > 0.5;
   World.input.jump = gp.buttons[0]?.pressed;
-  World.input.src = "gamepad";
 };

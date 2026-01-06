@@ -143,13 +143,14 @@ export function postPhysicsUpdate(world) {
 
   // maintain offset relative to ball
   const cameraDesiredPos = ballTargetPosition.clone().add(cameraOffset);
+  ballTargetPosition.add({ x: 6, z: 6 });
 
   if (world.keyDown) {
     world.camera.position.lerp(
       {
-        x: ballTargetPosition.x + 6,
+        x: ballTargetPosition.x,
         y: 6,
-        z: ballTargetPosition.z + 6,
+        z: ballTargetPosition.z,
       },
       0.05
     );

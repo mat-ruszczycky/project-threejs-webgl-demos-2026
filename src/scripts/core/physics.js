@@ -29,6 +29,12 @@ export function createGround(RAPIER, world) {
       .setFriction(0.8)
       .setRestitution(0.15)
   );
+
+  let rigidBodyDesc = RAPIER.RigidBodyDesc.fixed();
+  let rigidBody = world.createRigidBody(rigidBodyDesc);
+
+  let colliderDesc = RAPIER.ColliderDesc.cuboid(4.5, 1.5, 4.5);
+  let collider = world.createCollider(colliderDesc, rigidBody);
 }
 
 export function createBall(RAPIER, world, radius, startY = 6) {

@@ -8,6 +8,15 @@ export function createLights(scene) {
 export function createBallMesh(radius = 0.5) {
   const mesh = new THREE.Mesh(
     new THREE.SphereGeometry(radius, 10, 10),
+    new THREE.MeshStandardMaterial({ roughness: 0.7, wireframe: true })
+  );
+
+  return mesh;
+}
+
+export function createBoxMesh() {
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(9, 3, 9),
     new THREE.MeshStandardMaterial({ roughness: 0.7, wireframe: false })
   );
 

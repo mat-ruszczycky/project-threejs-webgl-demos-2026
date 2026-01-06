@@ -7,7 +7,7 @@ import { bindInput } from "./core/input";
 import { bindResize } from "./core/events";
 import { initDebugger } from "./core/debug";
 import { initRenderer, initScene, initCamera } from "./core/renderer";
-import { createLights, createBallMesh } from "./core/objects";
+import { createLights, createBallMesh, createBoxMesh } from "./core/objects";
 import { initControls } from "./core/controls";
 import {
   initPhysics,
@@ -31,6 +31,8 @@ const App = async () => {
   World.camera = initCamera();
   World.controls = initControls(World.camera, World.renderer);
 
+  World.objects.box = createBoxMesh();
+
   World.objects.ball = createBallMesh();
   World.physics.ball = createBall(
     World.physics.rapier,
@@ -39,6 +41,7 @@ const App = async () => {
   );
 
   World.scene.add(World.objects.ball);
+  World.scene.add(World.objects.box);
 
   createGround(World.physics.rapier, World.physics.world);
   createLights(World.scene);

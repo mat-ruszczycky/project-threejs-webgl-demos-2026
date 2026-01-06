@@ -155,18 +155,8 @@ export function postPhysicsUpdate(world) {
   const cameraDesiredPos = ballTargetPosition.clone().add(cameraOffset);
 
   if (world.keyDown) {
-    const targetPosition = ballTargetPosition
-      .clone()
-      .add(new THREE.Vector3(6, 0, 6));
-
-    world.camera.position.lerp(
-      {
-        x: targetPosition.x,
-        y: 6,
-        z: targetPosition.z,
-      },
-      0.05
-    );
+    const pos = ballTargetPosition.clone().add(new THREE.Vector3(6, 0, 6));
+    world.camera.position.lerp({ x: pos.x, y: 6, z: pos.z }, 0.05);
   } else {
     world.camera.position.lerp(cameraDesiredPos, 0.1);
   }

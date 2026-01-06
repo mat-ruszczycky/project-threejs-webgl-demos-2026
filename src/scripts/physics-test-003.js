@@ -59,9 +59,9 @@ const animate = () => {
 
   World.debug.begin();
   World.time.delta = World.time.clock.getDelta();
-  updateGamepadInput();
 
   if (!World.state.paused) {
+    updateGamepadInput();
     updateBallMovement(World);
     stepPhysics(World);
     postPhysicsUpdate(World);

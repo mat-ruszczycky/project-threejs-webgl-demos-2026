@@ -69,7 +69,7 @@ export function createBall(RAPIER, world, radius, startY = 6) {
   return body;
 }
 
-export function updateBallControls(world) {
+export function updateBallMovement(world) {
   const body = world.physics.ball;
   if (!body) return;
 

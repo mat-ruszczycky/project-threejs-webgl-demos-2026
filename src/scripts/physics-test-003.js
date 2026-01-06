@@ -13,7 +13,7 @@ import {
   initPhysics,
   createGround,
   createBall,
-  updateBallControls,
+  updateBallMovement,
   stepPhysics,
   postPhysicsUpdate,
 } from "./core/physics";
@@ -31,8 +31,6 @@ const App = async () => {
   World.camera = initCamera();
   World.controls = initControls(World.camera, World.renderer);
 
-  World.objects.box = createBoxMesh();
-
   World.objects.ball = createBallMesh();
   World.physics.ball = createBall(
     World.physics.rapier,
@@ -41,6 +39,9 @@ const App = async () => {
   );
 
   World.scene.add(World.objects.ball);
+
+  World.objects.box = createBoxMesh();
+  World.objects.box.position.y = 0.75;
   World.scene.add(World.objects.box);
 
   createGround(World.physics.rapier, World.physics.world);
@@ -61,7 +62,7 @@ const animate = () => {
   updateGamepadInput();
 
   if (!World.state.paused) {
-    updateBallControls(World);
+    updateBallMovementda(World);
     stepPhysics(World);
     postPhysicsUpdate(World);
 

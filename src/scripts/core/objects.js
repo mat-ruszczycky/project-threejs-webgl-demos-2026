@@ -14,9 +14,10 @@ export function createBallMesh(radius = 0.5) {
   return mesh;
 }
 
-export function createBoxMesh() {
+export function createBoxMesh(dims = { w: 9, h: 1.5, d: 9 }) {
+  const { w, h, d } = dims;
   const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(9, 3, 9),
+    new THREE.BoxGeometry(w, h, d),
     new THREE.MeshStandardMaterial({ roughness: 0.7, wireframe: false })
   );
 

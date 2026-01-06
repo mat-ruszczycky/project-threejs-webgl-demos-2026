@@ -130,19 +130,16 @@ export function postPhysicsUpdate(world) {
 
   ball.quaternion.copy(ballTargetQuat);
 
-  // Smooth follow: move camera relative to its current offset from target
-  const cameraOffset = new THREE.Vector3();
-
-  // current offset from target
-  cameraOffset.subVectors(world.camera.position, world.controls.target);
-
-  // maintain offset relative to ball
-  const cameraDesiredPos = ballTargetPosition.clone().add(cameraOffset);
-
   if (world.keyDown) {
     const pos = ballTargetPosition.clone().add(new THREE.Vector3(6, 6, 6));
     world.camera.position.lerp(pos, 0.05);
   } else {
+    // Smooth follow - move camera relative to its current offset from target
+    const cameraOffset = new THREE.Vector3();
+    cameraOffset.subVectors(world.camera.position, world.controls.target);
+
+    // Maintain offset relative to ball
+    const cameraDesiredPos = ballTargetPosition.clone().add(cameraOffset);
     world.camera.position.lerp(cameraDesiredPos, 0.1);
   }
 

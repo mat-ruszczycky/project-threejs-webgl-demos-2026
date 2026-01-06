@@ -28,23 +28,21 @@
         color: #fff;
         opacity: 0.5;
         margin-left: 45px;
-        transition: opacity 150ms linear;
+        transition: opacity 250ms linear;
       }
     }
 
     .project-link {
       border: 0;
       font-size: 22px;
-      transition: border-color 150ms linear;
+      transition: border-color 250ms linear;
       border-bottom: 1px solid rgba(255 255 255 / 0.4);
 
       div {
-        transition: opacity 150ms linear;
+        transition: opacity 250ms linear;
       }
 
       &:hover {
-        border-color: rgba(255 255 255 / 0);
-
         div {
           opacity: 0.5;
         }

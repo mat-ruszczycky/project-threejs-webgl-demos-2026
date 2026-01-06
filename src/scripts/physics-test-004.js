@@ -2,23 +2,23 @@
 import "../styles/app.scss";
 
 // Imports
-import { World } from "./core-001/world";
-import { bindInput, updateGamepadInput } from "./core-001/input";
-import { bindResize } from "./core-001/events";
-import { initDebugger } from "./core-001/debug";
-import { initRenderer, initScene, initCamera } from "./core-001/renderer";
+import { World } from "./core-002/world";
+import { bindInput, updateGamepadInput } from "./core-002/input";
+import { bindResize } from "./core-002/events";
+import { initDebugger } from "./core-002/debug";
+import { initRenderer, initScene, initCamera } from "./core-002/renderer";
 import {
   createLights,
   createBallMesh,
   createBoxMesh,
-} from "./core-001/objects";
-import { initControls } from "./core-001/controls";
+} from "./core-002/objects";
+import { initControls } from "./core-002/controls";
 import {
   initPhysics,
   createGround,
   createBall,
   updatePhysics,
-} from "./core-001/physics";
+} from "./core-002/physics";
 
 // App: Bootstrap
 const App = async () => {

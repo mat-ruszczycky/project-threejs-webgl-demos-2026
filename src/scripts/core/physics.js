@@ -39,6 +39,21 @@ export function createGround(RAPIER, world) {
   let collider = world.createCollider(colliderDesc, rigidBody);
 }
 
+/*
+.setMass(5)                // Mass of the object; heavier objects are harder to push or stop.
+.setVelocity(0, 10, 0)    // Initial speed and direction (x, y, z).
+.setAngularVelocity(0, 1, 0) // Initial spin around an axis.
+.setFixedRotation(true)    // Prevents the object from rotating at all.
+.setCollisionCategory(0x0002) // Defines which objects this can collide with.
+.setLinearVelocityLimit(20) // Maximum straight-line speed.
+.setAngularVelocityLimit(10) // Maximum rotational speed.
+.setSleepingThreshold(0.1) // How still the object must be to go to sleep.
+.setSensor(true)           // Object detects collisions but doesn’t physically react.
+.setKinematic(true)        // Moves only via code, unaffected by forces or gravity.
+.setFrictionAir(0.5)       // Extra drag in air (useful for lighter objects or floating effects).
+.setRestitutionThreshold(1) // Minimum impact speed required for bounciness to take effect.
+*/
+
 export function createBall(RAPIER, world, radius, startY = 6) {
   const body = world.createRigidBody(
     RAPIER.RigidBodyDesc.dynamic()

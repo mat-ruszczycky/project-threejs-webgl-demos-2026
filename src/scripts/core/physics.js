@@ -35,8 +35,8 @@ export function createGround(RAPIER, world) {
 
   /*
   Collider Properties
-
-*/
+  TBD ADD NOTES
+  */
 
   let colliderDesc = RAPIER.ColliderDesc.cuboid(4.5, 1.5, 4.5)
     .setFriction(0.75) // Sets surface friction. 1 means high friction, so objects will resist sliding.
@@ -46,7 +46,7 @@ export function createGround(RAPIER, world) {
 
 /*
   Rigid Body Properties
-
+    TBD ADD NOTES
 */
 
 export function createBall(RAPIER, world, radius, startY = 6) {

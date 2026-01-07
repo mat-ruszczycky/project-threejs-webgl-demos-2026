@@ -50,7 +50,7 @@ const animate = () => {
   CORE.World.time.delta = CORE.World.time.clock.getDelta();
 
   if (!CORE.World.state.paused) {
-    CORE.updateGamepadInput();
+    CORE.updateGamepadInput(CORE.World);
     CORE.updatePhysics(CORE.World);
     CORE.World.renderer.render(CORE.World.scene, CORE.World.camera);
   }

@@ -2,73 +2,60 @@
 import "../styles/app.scss";
 
 // Imports
-import { World } from "./core-002/world";
-import { bindInput, updateGamepadInput } from "./core-002/input";
-import { bindResize } from "./core-002/events";
-import { initDebugger } from "./core-002/debug";
-import { initRenderer, initScene, initCamera } from "./core-002/renderer";
-import {
-  createLights,
-  createBallMesh,
-  createBoxMesh,
-} from "./core-002/objects";
-import { initControls } from "./core-002/controls";
-import {
-  initPhysics,
-  createGround,
-  createBall,
-  updatePhysics,
-} from "./core-002/physics";
+import * as CORE from "./core-002";
 
 // App: Bootstrap
 const App = async () => {
-  World.debug = initDebugger(World);
+  CORE.World.debug = CORE.initDebugger(CORE.World);
 
-  const physics = await initPhysics();
-  World.physics.rapier = physics.RAPIER;
-  World.physics.world = physics.world;
+  const physics = await CORE.initPhysics();
+  CORE.World.physics.rapier = physics.RAPIER;
+  CORE.World.physics.world = physics.world;
 
-  World.renderer = initRenderer();
-  World.scene = initScene();
-  World.camera = initCamera();
-  World.controls = initControls(World.camera, World.renderer);
-
-  World.objects.ball = createBallMesh();
-  World.physics.ball = createBall(
-    World.physics.rapier,
-    World.physics.world,
-    World.objects.ball.geometry.parameters.radius
+  CORE.World.renderer = CORE.initRenderer();
+  CORE.World.scene = CORE.initScene();
+  CORE.World.camera = CORE.initCamera();
+  CORE.World.controls = CORE.initControls(
+    CORE.World.camera,
+    CORE.World.renderer
   );
 
-  World.scene.add(World.objects.ball);
+  CORE.World.objects.ball = CORE.createBallMesh();
+  CORE.World.physics.ball = CORE.createBall(
+    CORE.World.physics.rapier,
+    CORE.World.physics.world,
+    CORE.World.objects.ball.geometry.parameters.radius
+  );
 
-  World.objects.box = createBoxMesh();
-  World.objects.box.position.y = 0.75;
-  World.scene.add(World.objects.box);
+  CORE.World.scene.add(CORE.World.objects.ball);
 
-  createGround(World.physics.rapier, World.physics.world);
-  createLights(World.scene);
+  CORE.World.objects.box = CORE.createBoxMesh();
+  CORE.World.objects.box.position.y = 0.75;
+  CORE.World.scene.add(CORE.World.objects.box);
 
-  bindInput(World);
-  bindResize(World.camera, World.renderer);
+  CORE.createGround(CORE.World.physics.rapier, CORE.World.physics.world);
+  CORE.createLights(CORE.World.scene);
+
+  CORE.bindInput(CORE.World);
+  CORE.bindResize(CORE.World.camera, CORE.World.renderer);
 
   animate();
 };
 
 // App: Main Loop
 const animate = () => {
-  if (!World.renderer || !World.scene) return;
+  if (!CORE.World.renderer || !CORE.World.scene) return;
 
-  World.debug.begin();
-  World.time.delta = World.time.clock.getDelta();
+  CORE.World.debug.begin();
+  CORE.World.time.delta = CORE.World.time.clock.getDelta();
 
-  if (!World.state.paused) {
-    updateGamepadInput();
-    updatePhysics(World);
-    World.renderer.render(World.scene, World.camera);
+  if (!CORE.World.state.paused) {
+    CORE.updateGamepadInput();
+    CORE.updatePhysics(CORE.World);
+    CORE.World.renderer.render(CORE.World.scene, CORE.World.camera);
   }
 
-  World.debug.end();
+  CORE.World.debug.end();
   requestAnimationFrame(animate);
 };
 

@@ -37,3 +37,7 @@ export function initDebugger(world) {
     end: () => stats.forEach((s) => s.end()),
   };
 }
+
+export function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

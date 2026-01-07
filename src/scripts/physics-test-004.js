@@ -2,7 +2,7 @@
 import "../styles/app.scss";
 
 // Imports
-import * as CORE from "./core-002";
+import CORE from "./core-002";
 
 // App: Bootstrap
 const App = async () => {

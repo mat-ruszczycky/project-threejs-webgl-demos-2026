@@ -133,8 +133,10 @@ export function postPhysicsUpdate(world) {
     world.camera.position.lerp(pos, 0.05);
   } else {
     // Smooth follow - move camera relative to its current offset from target
-    const cameraOffset = new THREE.Vector3();
-    cameraOffset.subVectors(world.camera.position, world.controls.target);
+    const cameraOffset = new THREE.Vector3().subVectors(
+      world.camera.position,
+      world.controls.target
+    );
 
     // Maintain offset relative to ball
     const cameraDesiredPos = ballTargetPosition.clone().add(cameraOffset);

@@ -25,18 +25,24 @@ export function stepPhysics(world) {
   }
 }
 
+/**
+ * Creates a ground collider in the given Rapier physics world.
+ *
+ * @param {typeof import("@dimforge/rapier3d")} RAPIER Rapier physics library
+ * @param {RAPIER.World} world Physics world instance
+ */
 export function createGround(RAPIER, world) {
   world.createCollider(
     RAPIER.ColliderDesc.cuboid(125, 0.1, 125)
       .setFriction(0.8)
-      .setRestitution(0.15)
+      .setRestitution(0.5)
   );
 
   let rigidBodyDesc = RAPIER.RigidBodyDesc.fixed();
   let rigidBody = world.createRigidBody(rigidBodyDesc);
 
   let colliderDesc = RAPIER.ColliderDesc.cuboid(4.5, 1.5, 4.5)
-    .setFriction(0.75) // Sets surface friction. 1 means high friction, so objects will resist sliding.
+    .setFriction(0.01) // Sets surface friction. 1 means high friction, so objects will resist sliding.
     .setRestitution(0.33); // Sets how bouncy the object is. 0.25 means it barely bounces.
   let collider = world.createCollider(colliderDesc, rigidBody);
 }

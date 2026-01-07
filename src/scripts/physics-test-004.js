@@ -48,8 +48,11 @@ const animate = () => {
 
   CORE.World.debug.begin();
   CORE.World.time.delta = CORE.World.time.clock.getDelta();
+  CORE.World.time.elapsedTime = CORE.World.time.clock.getElapsedTime();
 
   if (!CORE.World.state.paused) {
+    console.log("CORE.World.time.delta", CORE.World.time.delta);
+    console.log("CORE.World.time.elapsedTime", CORE.World.time.elapsedTime);
     CORE.updateGamepadInput(CORE.World);
     CORE.updatePhysics(CORE.World);
     CORE.World.renderer.render(CORE.World.scene, CORE.World.camera);
